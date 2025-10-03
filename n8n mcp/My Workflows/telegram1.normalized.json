@@ -1,0 +1,985 @@
+{
+  "name": "Telegram Budget Guardian",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ]
+      },
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1020,
+        200
+      ],
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram Bot"
+        }
+      },
+      "id": "telegram_trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"message\"]?.voice !== undefined}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "name": "Is Voice Message?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1.1,
+      "position": [
+        -760,
+        200
+      ],
+      "id": "is_voice_message"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{$json[\"message\"]?.chat?.id}}",
+        "text": "={{\"Please send a voice note so I can review your finances.\"}}"
+      },
+      "name": "Voice Only Prompt",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 2.1,
+      "position": [
+        -520,
+        20
+      ],
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram Bot"
+        }
+      },
+      "id": "voice_only_prompt"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const msg = item.json.message;\n  return {\n    json: {\n      chatId: msg.chat.id,\n      userId: msg.from.id,\n      messageId: msg.message_id,\n      username: msg.from.username || \"\",\n      firstName: msg.from.first_name || \"\",\n      timestamp: msg.date,\n      voiceFileId: msg.voice.file_id\n    }\n  };\n});"
+      },
+      "name": "Prepare Voice Download",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        360
+      ],
+      "id": "prepare_voice_download"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": "={{$json[\"voiceFileId\"]}}"
+      },
+      "name": "Download Voice File",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 2.1,
+      "position": [
+        -280,
+        360
+      ],
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram Bot"
+        }
+      },
+      "id": "download_voice_file"
+    },
+    {
+      "parameters": {
+        "mode": "binaryToBinary",
+        "sourceBinaryProperty": "data",
+        "destinationBinaryProperty": "voiceFile",
+        "options": {
+          "keepSource": true
+        }
+      },
+      "name": "Rename Binary voiceFile",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        360
+      ],
+      "id": "rename_binary_voicefile"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/audio/transcriptions",
+        "method": "POST",
+        "sendBinaryData": true,
+        "binaryPropertyName": "voiceFile",
+        "bodyContentType": "multipart-form-data",
+        "options": {
+          "responsePropertyName": "transcription"
+        },
+        "formDataParameters": [
+          {
+            "name": "model",
+            "value": "whisper-1"
+          },
+          {
+            "name": "response_format",
+            "value": "json"
+          }
+        ]
+      },
+      "name": "Transcribe Voice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        200,
+        360
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "OpenAI Header Auth"
+        }
+      },
+      "id": "transcribe_voice"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const transcript = item.json.transcription?.text || \"\";\n  const cleanedTranscript = transcript.trim();\n  return {\n    json: {\n      chatId: item.json.chatId,\n      userId: item.json.userId,\n      messageId: item.json.messageId,\n      username: item.json.username,\n      firstName: item.json.firstName,\n      timestamp: item.json.timestamp,\n      transcript: cleanedTranscript,\n      voiceFileId: item.json.voiceFileId\n    }\n  };\n});"
+      },
+      "name": "Build Planner Input",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        440,
+        360
+      ],
+      "id": "build_planner_input"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "jsonParameters": true,
+        "headerParameters": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "options": {
+          "responsePropertyName": "plannerResponse"
+        },
+        "bodyParametersJson": "={{ JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.1, response_format: { type: 'json_schema', json_schema: { name: 'agent_plan_schema', schema: { type: 'object', additionalProperties: false, properties: { globalSummary: { type: 'string' }, financialAnalyst: { type: 'object', additionalProperties: false, properties: { shouldRun: { type: 'boolean' }, instructions: { type: 'string' }, dataRequirements: { type: 'array', items: { type: 'string' } } }, required: ['shouldRun', 'instructions'] }, dataRetrieval: { type: 'object', additionalProperties: false, properties: { shouldRun: { type: 'boolean' }, instructions: { type: 'string' }, searchQueries: { type: 'array', items: { type: 'string' } }, vectorQueries: { type: 'array', items: { type: 'string' } } }, required: ['shouldRun', 'instructions'] }, userInteraction: { type: 'object', additionalProperties: false, properties: { shouldRun: { type: 'boolean' }, focus: { type: 'string' }, followUps: { type: 'array', items: { type: 'string' } } }, required: ['shouldRun'] } }, required: ['financialAnalyst', 'dataRetrieval', 'userInteraction'] } }, messages: [ { role: 'system', content: 'You are the planner agent in a CrewAI financial assistant. Analyse the latest user transcript and decide which specialist agents should act. Output JSON that strictly matches the schema.' }, { role: 'user', content: 'Transcript:' + ($json.transcript || '') + '\nUser first name:' + ($json.firstName || '') + '\nIf the transcript is empty, set all shouldRun values to false and explain in globalSummary.' } ] }) }}"
+      },
+      "name": "Planner Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        680,
+        360
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "OpenAI Header Auth"
+        }
+      },
+      "id": "planner_agent"
+    },
+    {
+      "parameters": {
+        "functionCode": "const staticData = this.getWorkflowStaticData('global');\nreturn items.map(item => {\n  const response = item.json.plannerResponse || {};\n  const content = response.choices?.[0]?.message?.content || '{}';\n  let plan;\n  try {\n    plan = JSON.parse(content);\n  } catch (error) {\n    plan = {\n      globalSummary: 'Planner failed to produce structured plan. Defaulting to no-op.',\n      financialAnalyst: { shouldRun: false, instructions: '', dataRequirements: [] },\n      dataRetrieval: { shouldRun: false, instructions: '', searchQueries: [], vectorQueries: [] },\n      userInteraction: { shouldRun: true, focus: 'Apologise for the temporary issue and ask the user to retry.', followUps: [] }\n    };\n  }\n  staticData.plan = plan;\n  staticData.transcript = item.json.transcript;\n  staticData.chat = {\n    chatId: item.json.chatId,\n    userId: item.json.userId,\n    messageId: item.json.messageId,\n    username: item.json.username,\n    firstName: item.json.firstName\n  };\n  staticData.agentResponses = [];\n  return {\n    json: {\n      plan,\n      transcript: item.json.transcript,\n      chatId: item.json.chatId,\n      userId: item.json.userId,\n      messageId: item.json.messageId,\n      username: item.json.username,\n      firstName: item.json.firstName\n    }\n  };\n});"
+      },
+      "name": "Setup Plan Context",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        920,
+        360
+      ],
+      "id": "setup_plan_context"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.flatMap(item => {\n  const plan = item.json.plan || {};\n  const transcript = item.json.transcript;\n  const base = {\n    transcript,\n    chatId: item.json.chatId,\n    userId: item.json.userId,\n    messageId: item.json.messageId,\n    username: item.json.username,\n    firstName: item.json.firstName,\n    plan\n  };\n  const agents = [\n    { key: 'financialAnalyst', name: 'Financial Analyst Agent' },\n    { key: 'dataRetrieval', name: 'Data Retrieval Agent' }\n  ];\n  return agents.map(agent => {\n    const spec = plan[agent.key] || {};\n    return {\n      json: {\n        ...base,\n        agentKey: agent.key,\n        agentName: agent.name,\n        shouldRun: spec.shouldRun === true,\n        instructions: spec.instructions || '',\n        planChunk: spec\n      }\n    };\n  });\n});"
+      },
+      "name": "Prepare Agent Loop",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        360
+      ],
+      "id": "prepare_agent_loop"
+    },
+    {
+      "parameters": {
+        "batchSize": 1
+      },
+      "name": "Agents Loop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        360
+      ],
+      "id": "agents_loop"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.shouldRun}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "name": "Should Run Agent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1.1,
+      "position": [
+        1640,
+        360
+      ],
+      "id": "should_run_agent"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => ({\n  json: {\n    agentKey: item.json.agentKey,\n    agentName: item.json.agentName,\n    response: 'Planner did not activate this specialist for the current request.',\n    transcript: item.json.transcript,\n    chatId: item.json.chatId,\n    plan: item.json.plan\n  }\n}));"
+      },
+      "name": "Skip Agent Placeholder",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        1880,
+        180
+      ],
+      "id": "skip_agent_placeholder"
+    },
+    {
+      "parameters": {
+        "propertyName": "={{$json.agentKey}}",
+        "rules": [
+          {
+            "value2": "financialAnalyst",
+            "operation": "equals"
+          },
+          {
+            "value2": "dataRetrieval",
+            "operation": "equals"
+          }
+        ]
+      },
+      "name": "Agent Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        520
+      ],
+      "id": "agent_router"
+    },
+    {
+      "parameters": {
+        "url": "https://your-convex-app.convex.cloud/api/spendings",
+        "method": "GET",
+        "queryParameters": [
+          {
+            "name": "userId",
+            "value": "={{$json.userId}}"
+          }
+        ],
+        "options": {
+          "responsePropertyName": "spendingData"
+        }
+      },
+      "name": "Fetch Spending Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        400
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "name": "Convex Service Auth"
+        }
+      },
+      "id": "fetch_spending_data"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "jsonParameters": true,
+        "headerParameters": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "options": {
+          "responsePropertyName": "agentReply"
+        },
+        "bodyParametersJson": "={{ JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.2, messages: [ { role: 'system', content: 'You are the Financial Analyst Agent within a CrewAI budgeting assistant. Use the provided spending data to produce actionable guidance. Always quantify savings opportunities, propose budget adjustments, and highlight concerning spending categories.' }, { role: 'user', content: 'User transcript:' + ($json.transcript || '') + '\nPlanner instructions:' + ($json.planChunk?.instructions || '') + '\nData requirements:' + JSON.stringify($json.planChunk?.dataRequirements || []) + '\nSpending data JSON:' + JSON.stringify($json.spendingData || {}) } ] }) }}"
+      },
+      "name": "Financial Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "OpenAI Header Auth"
+        }
+      },
+      "id": "financial_agent"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const text = item.json.agentReply?.choices?.[0]?.message?.content || 'Financial analyst could not produce guidance.';\n  return {\n    json: {\n      agentKey: item.json.agentKey,\n      agentName: item.json.agentName,\n      response: text.trim(),\n      transcript: item.json.transcript,\n      chatId: item.json.chatId,\n      plan: item.json.plan\n    }\n  };\n});"
+      },
+      "name": "Format Financial Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        400
+      ],
+      "id": "format_financial_response"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "method": "GET",
+        "queryParameters": [
+          {
+            "name": "engine",
+            "value": "google"
+          },
+          {
+            "name": "q",
+            "value": "={{$json.planChunk?.searchQueries?.[0] || $json.planChunk?.instructions || $json.transcript}}"
+          },
+          {
+            "name": "location",
+            "value": "United States"
+          },
+          {
+            "name": "api_key",
+            "value": "={{$env.SERPAPI_KEY || \"set-serpapi-key\"}}"
+          }
+        ],
+        "options": {
+          "responsePropertyName": "priceResults"
+        }
+      },
+      "name": "Retail Price Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        640
+      ],
+      "id": "retail_price_search"
+    },
+    {
+      "parameters": {
+        "url": "https://your-convex-app.convex.cloud/api/faq/search",
+        "method": "POST",
+        "jsonParameters": true,
+        "headerParameters": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "options": {
+          "responsePropertyName": "vectorMatches"
+        },
+        "bodyParametersJson": "={{ JSON.stringify({ userId: $json.userId, queries: $json.planChunk?.vectorQueries || [$json.transcript] }) }}"
+      },
+      "name": "FAQ Vector Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        640
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "name": "Convex Service Auth"
+        }
+      },
+      "id": "faq_vector_query"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  return {\n    json: {\n      agentKey: item.json.agentKey,\n      agentName: item.json.agentName,\n      transcript: item.json.transcript,\n      chatId: item.json.chatId,\n      plan: item.json.plan,\n      planChunk: item.json.planChunk,\n      instructions: item.json.instructions,\n      priceResults: item.json.priceResults,\n      vectorMatches: item.json.vectorMatches\n    }\n  };\n});"
+      },
+      "name": "Compile Retrieval Context",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        640
+      ],
+      "id": "compile_retrieval_context"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "jsonParameters": true,
+        "headerParameters": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "options": {
+          "responsePropertyName": "agentReply"
+        },
+        "bodyParametersJson": "={{ JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.3, messages: [ { role: 'system', content: 'You are the Data Retrieval Agent. Use the provided web search snippets and vector FAQ matches to provide concise price comparisons, resource links, and prompt follow-up research ideas. Cite each fact with source names.' }, { role: 'user', content: 'Planner instructions:' + ($json.planChunk?.instructions || '') + '\nWeb search results:' + JSON.stringify($json.priceResults || {}) + '\nVector FAQ matches:' + JSON.stringify($json.vectorMatches || {}) + '\nOriginal transcript:' + ($json.transcript || '') } ] }) }}"
+      },
+      "name": "Data Retrieval Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        640
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "OpenAI Header Auth"
+        }
+      },
+      "id": "data_retrieval_agent"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const text = item.json.agentReply?.choices?.[0]?.message?.content || 'Data retrieval agent did not find additional insights.';\n  return {\n    json: {\n      agentKey: item.json.agentKey,\n      agentName: item.json.agentName,\n      response: text.trim(),\n      transcript: item.json.transcript,\n      chatId: item.json.chatId,\n      plan: item.json.plan\n    }\n  };\n});"
+      },
+      "name": "Format Data Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        3100,
+        640
+      ],
+      "id": "format_data_response"
+    },
+    {
+      "parameters": {
+        "functionCode": "const staticData = this.getWorkflowStaticData('global');\nreturn items.map(item => {\n  const payload = {\n    agentKey: item.json.agentKey,\n    agentName: item.json.agentName,\n    response: item.json.response\n  };\n  if (!Array.isArray(staticData.agentResponses)) {\n    staticData.agentResponses = [];\n  }\n  staticData.agentResponses.push(payload);\n  return item;\n});"
+      },
+      "name": "Store Agent Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        3340,
+        420
+      ],
+      "id": "store_agent_response"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items;"
+      },
+      "name": "Loop Next Batch",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        3580,
+        420
+      ],
+      "id": "loop_next_batch"
+    },
+    {
+      "parameters": {
+        "functionCode": "const staticData = this.getWorkflowStaticData('global');\nconst responses = Array.isArray(staticData.agentResponses) ? staticData.agentResponses : [];\nconst plan = staticData.plan || {};\nconst transcript = staticData.transcript || '';\nconst chat = staticData.chat || {};\nreturn [{\n  json: {\n    chatId: chat.chatId,\n    messageId: chat.messageId,\n    transcript,\n    agentResponses: responses,\n    plan,\n    userAgentPlan: plan.userInteraction || { shouldRun: true, focus: 'Summarise the plan and let the user know the system is ready for questions.', followUps: [] },\n    username: chat.username,\n    firstName: chat.firstName\n  }\n}];"
+      },
+      "name": "Collate Responses",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        700
+      ],
+      "id": "collate_responses"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.userAgentPlan?.shouldRun !== false}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "name": "Should Run UX Agent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1.1,
+      "position": [
+        1640,
+        700
+      ],
+      "id": "should_run_ux_agent"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "jsonParameters": true,
+        "headerParameters": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "options": {
+          "responsePropertyName": "agentReply"
+        },
+        "bodyParametersJson": "={{ JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.4, messages: [ { role: 'system', content: 'You are the User Interaction Agent for a financial planning assistant. Craft a friendly, encouraging Telegram reply. Summarise each specialist agent's findings in separate, clearly labelled bullet sections. End with one actionable next step and an optional follow-up question aligned with planner guidance.' }, { role: 'user', content: 'User first name:' + ($json.firstName || '') + '\nPlanner focus:' + ($json.userAgentPlan?.focus || '') + '\nPlanner follow-ups:' + JSON.stringify($json.userAgentPlan?.followUps || []) + '\nAgent responses:' + JSON.stringify($json.agentResponses || []) + '\nOriginal transcript:' + ($json.transcript || '') } ] }) }}"
+      },
+      "name": "User Interaction Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        1880,
+        820
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "OpenAI Header Auth"
+        }
+      },
+      "id": "user_interaction_agent"
+    },
+    {
+      "parameters": {
+        "functionCode": "const staticData = this.getWorkflowStaticData('global');\nstaticData.agentResponses = [];\nreturn items.map(item => {\n  const content = item.json.agentReply?.choices?.[0]?.message?.content || 'Here is a summary of your financial insights.';\n  return {\n    json: {\n      chatId: item.json.chatId,\n      replyText: content.trim()\n    }\n  };\n});"
+      },
+      "name": "Extract Final Reply",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        2120,
+        820
+      ],
+      "id": "extract_final_reply"
+    },
+    {
+      "parameters": {
+        "functionCode": "const staticData = this.getWorkflowStaticData('global');\nstaticData.agentResponses = [];\nreturn items.map(item => {\n  const responses = item.json.agentResponses || [];\n  const sections = responses.map(r => '• ' + r.agentName + ': ' + r.response).join('\\n\\n');\n  const base = sections || 'No specialist agents were triggered this time. Let me know how else I can help!';\n  const message = base + '\\n\\nFeel free to send another voice note whenever you need support.';\n  return {\n    json: {\n      chatId: item.json.chatId,\n      replyText: message\n    }\n  };\n});"
+      },
+      "name": "Fallback Reply Composer",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        1880,
+        600
+      ],
+      "id": "fallback_reply_composer"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{$json.chatId}}",
+        "text": "={{$json.replyText}}"
+      },
+      "name": "Send Telegram Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 2.1,
+      "position": [
+        2360,
+        700
+      ],
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram Bot"
+        }
+      },
+      "id": "send_telegram_reply"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Is Voice Message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Voice Message?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Voice Download",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Voice Only Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Voice Download": {
+      "main": [
+        [
+          {
+            "node": "Download Voice File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice File": {
+      "main": [
+        [
+          {
+            "node": "Rename Binary voiceFile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Binary voiceFile": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Voice": {
+      "main": [
+        [
+          {
+            "node": "Build Planner Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Planner Input": {
+      "main": [
+        [
+          {
+            "node": "Planner Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planner Agent": {
+      "main": [
+        [
+          {
+            "node": "Setup Plan Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Plan Context": {
+      "main": [
+        [
+          {
+            "node": "Prepare Agent Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Agent Loop": {
+      "main": [
+        [
+          {
+            "node": "Agents Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agents Loop": {
+      "main": [
+        [
+          {
+            "node": "Should Run Agent?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Collate Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Run Agent?": {
+      "main": [
+        [
+          {
+            "node": "Agent Router",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip Agent Placeholder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Agent Placeholder": {
+      "main": [
+        [
+          {
+            "node": "Store Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Router": {
+      "main": [
+        [
+          {
+            "node": "Fetch Spending Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Retail Price Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip Agent Placeholder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Spending Data": {
+      "main": [
+        [
+          {
+            "node": "Financial Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Financial Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Financial Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Financial Response": {
+      "main": [
+        [
+          {
+            "node": "Store Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retail Price Search": {
+      "main": [
+        [
+          {
+            "node": "FAQ Vector Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FAQ Vector Query": {
+      "main": [
+        [
+          {
+            "node": "Compile Retrieval Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compile Retrieval Context": {
+      "main": [
+        [
+          {
+            "node": "Data Retrieval Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Retrieval Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Data Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Data Response": {
+      "main": [
+        [
+          {
+            "node": "Store Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Agent Response": {
+      "main": [
+        [
+          {
+            "node": "Loop Next Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Next Batch": {
+      "main": [
+        [
+          {
+            "node": "Agents Loop",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Collate Responses": {
+      "main": [
+        [
+          {
+            "node": "Should Run UX Agent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Run UX Agent?": {
+      "main": [
+        [
+          {
+            "node": "User Interaction Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fallback Reply Composer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Interaction Agent": {
+      "main": [
+        [
+          {
+            "node": "Extract Final Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Final Reply": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Reply Composer": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

@@ -1,0 +1,1431 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {
+            "download": false
+          }
+        },
+        "id": "bb119735-9a0f-4a14-ae9b-5ab13044d781",
+        "name": "Telegram Message Trigger",
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -4768,
+          172
+        ],
+        "webhookId": "61396260-c024-467a-a04e-d71e2ef4fc83",
+        "credentials": {
+          "telegramApi": {
+            "id": "sl2XyaTKmEdfH4KK",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "2b538077-d3d3-4713-b973-68748313ff97",
+                "leftValue": "={{ $json.message.voice }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "object",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -4544,
+          172
+        ],
+        "id": "15050454-c461-4cb3-880b-30f0ee39e952",
+        "name": "Check if Audio file"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "fileId": "={{ $json.message.voice.file_id }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          -4320,
+          76
+        ],
+        "id": "a3efcfab-966a-4bea-be9e-3b41ca1beb17",
+        "name": "Get a file",
+        "webhookId": "a50f0104-6e43-4a08-90f5-3e1dc050e450",
+        "credentials": {
+          "telegramApi": {
+            "id": "sl2XyaTKmEdfH4KK",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "eb912219-2436-4f04-8ffc-c1c20eb07344",
+                "name": "text",
+                "value": "={{ $json.message.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -4096,
+          268
+        ],
+        "id": "a8912b8d-3a1a-4628-b083-c966c8f83c26",
+        "name": "Set field"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b78b673d-95a4-4d7c-b6a8-91e25c1d368d",
+                "name": "user_id",
+                "value": "={{ $node[\"Telegram Message Trigger\"].json.message?.from?.id }}",
+                "type": "string"
+              },
+              {
+                "id": "7bb91beb-c6de-414e-ad16-3a029b337bcd",
+                "name": "chat_id",
+                "value": "={{ $node[\"Telegram Message Trigger\"].json.message?.chat?.id }}",
+                "type": "string"
+              },
+              {
+                "id": "d3ba7439-af55-4838-b22d-bfb71a07472e",
+                "name": "user_text",
+                "value": "={{ $json.text || $json.transcription || $node[\"Telegram Message Trigger\"].json.message?.text || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "d4a517fd-6abe-4980-a2ae-9efc6101ff3b",
+                "name": "ts",
+                "value": "={{ $now }}",
+                "type": "string"
+              },
+              {
+                "id": "0a5d5b7b-0f36-4b79-9a9b-7d2a99b86a1f",
+                "name": "sessionId",
+                "value": "={{ $node[\"Telegram Message Trigger\"].json.message?.chat?.id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -3872,
+          172
+        ],
+        "id": "7aae619d-ad19-47a0-8e1c-8c5ad92c9205",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Message Trigger').first().json.message.chat.id }}",
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          -3072,
+          396
+        ],
+        "id": "6595c1fa-2843-4a85-8911-e33e33af1cd7",
+        "name": "Simple Memory (Planner)"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Planner for Budget Guardian\nDecide the next step and output ONLY valid JSON via the provided tool.\nRules:\n- Exactly one of runAnalyst or runPrice MUST be true (the other must be false).\n- If unsure/ambiguous or message is general, set runAnalyst=true and runPrice=false.\n- runAnalyst: budgeting, spending, categories, limits, savings, analyze transactions or numbers, plans.\n- runPrice: cheaper/deals/discounts/coupons/compare/merchant/product/where to buy; product/merchant names, promo codes, student discounts.\n- price_queries: if runPrice=true, add 1–3 concise queries (include region if relevant, e.g., \"US\", and \"student discount\" if applicable).\n- questions_for_user: at most 2 clarifying questions.\nUse the format_final_json_response tool to return your answer. No prose.\n\nUser text:\n{{ $json.user_text }}",
+          "hasOutputParser": true,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          -3144,
+          172
+        ],
+        "id": "e05c41f7-b9ac-4e90-a673-723b4a66719d",
+        "name": "AI Agent - Planner"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "dcc09466-5438-4cf2-91ce-4773837a6a31",
+                "leftValue": "={{ $json.runAnalyst }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "isTrue",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -2464,
+          288
+        ],
+        "id": "57d0b190-d520-445d-be4c-384b3ce493be",
+        "name": "If runAnalyst?"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "dcc09466-5438-4cf2-91ce-4773837a6a31",
+                "leftValue": "={{ $json.runPrice }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "isTrue",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -2448,
+          720
+        ],
+        "id": "c7b4a1e9-bb5b-4357-9598-9e3ef92398ba",
+        "name": "If runPrice?"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Message Trigger').first().json.message.chat.id }}",
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          -2096,
+          416
+        ],
+        "id": "00ed78f7-158d-42f0-87b0-c9100e7b42a4",
+        "name": "Simple Memory (Analyst)"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Financial Analyst Agent\nAnalyze the user's spending text and any embedded transactions (JSON/CSV-like). When data is missing, infer cautiously and ask for what's needed.\nReturn ONLY the fields defined by the connected output parser: insights, top_actions, savings_estimate. Use short strings for arrays.\n\n**USER FINANCIAL PROFILE:**\n{{ $('Merge User Context').item.json.user_context_summary || 'New user - no previous data.' }}\n\nInput:\n- user_text: {{ $json.user_text }}\n\nConsider the user's historical spending patterns and income when providing insights. If they mention new spending or income, factor it into your analysis.",
+          "hasOutputParser": true,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          -2176,
+          192
+        ],
+        "id": "401314fb-a12e-43b2-85d1-5aa0354fa10f",
+        "name": "AI Agent - Analyst"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c2d611c7-9833-4cde-8a90-bfb6864a53b0",
+                "name": "output",
+                "value": "={{ (() => { const a = (typeof $json.analysis === 'object' && $json.analysis) ? $json.analysis : $json; const insights = Array.isArray(a.insights) ? a.insights.slice(0,3) : []; const actions = Array.isArray(a.top_actions) ? a.top_actions.slice(0,3) : []; const se = a.savings_estimate || {}; const weekly = typeof se.weekly === 'number' ? se.weekly : null; const monthly = typeof se.monthly === 'number' ? se.monthly : null; const lines = []; const getUserText = () => { const fromCurrent = $json.user_text; if (typeof fromCurrent === 'string' && fromCurrent.trim().length) return fromCurrent; const fromNormalize = $('Sub Agentic Task').item.json.user_text; if (typeof fromNormalize === 'string' && fromNormalize.trim().length) return fromNormalize; const fromEdit = $('Edit Fields').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; if (actions.length || insights.length || weekly !== null || monthly !== null) { lines.push('Here’s your quick budget check-in:'); if (actions.length) { lines.push('Top actions:'); actions.forEach((t,i)=>lines.push(`${i+1}. ${t}`)); } if (weekly !== null || monthly !== null) { const w = weekly !== null ? `$${weekly.toFixed(2)}/wk` : ''; const m = monthly !== null ? ` (~$${monthly.toFixed(2)}/mo)` : ''; lines.push(`Est. savings: ${w}${m}`.trim()); } if (insights.length) { lines.push('Notes: ' + insights.join(' | ')); } } else { const ut = getUserText().slice(0,120); if (ut) { lines.push('Got it: ' + ut + '.'); } lines.push('Tell me the goal: analyze your spending or find cheaper options?'); } lines.push('☑️ Want me to set limits or track a category this week?'); return lines.join('\\n'); })() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1824,
+          240
+        ],
+        "id": "4b7b9248-b21d-4edd-8da2-b1ef814c501f",
+        "name": "Compose Message - Analyst"
+      },
+      {
+        "parameters": {
+          "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+          "additionalParameters": {}
+        },
+        "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+        "typeVersion": 1,
+        "position": [
+          -2032,
+          928
+        ],
+        "id": "b626f691-80a8-4a3d-b8bf-b9045e93dca9",
+        "name": "Brave Search (Retrieval)",
+        "credentials": {
+          "braveSearchApi": {
+            "id": "vr0EyDuMtCwAFnz6",
+            "name": "Brave Search account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Message Trigger').first().json.message.chat.id }}",
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          -2160,
+          928
+        ],
+        "id": "b56f7bb7-96ec-4986-87da-4793c6a556ff",
+        "name": "Simple Memory (Retrieval)"
+      },
+      {
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"price_results\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"merchant\": { \"type\": \"string\" },\n          \"price\": { \"type\": \"string\" },\n          \"title\": { \"type\": \"string\" },\n          \"link\": { \"type\": \"string\" }\n        },\n        \"required\": []\n      },\n      \"minItems\": 0,\n      \"maxItems\": 5\n    }\n  },\n  \"required\": []\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3,
+        "position": [
+          -1904,
+          928
+        ],
+        "id": "4311fe86-aa5f-4fda-9ec6-5f149803bc15",
+        "name": "Structured Output Parser (Retrieval)"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Data Retrieval Agent (price/deals)\nUse the Brave Search tool. If price_queries exist, start with those; otherwise derive queries. Look for student discounts, coupon codes, cheaper alternatives, bundles, and trustworthy merchants. Extract prices when possible.\nReturn ONLY price_results as per the connected parser with the 3–5 best results.\nInputs:\n- user_text: {{ $json.user_text }}\n- price_queries: {{ $json.price_queries || [] }}",
+          "hasOutputParser": true,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          -2176,
+          704
+        ],
+        "id": "535631ae-dfc4-4cb3-834e-18ab47d57df3",
+        "name": "AI Agent - Data Retrieval"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "9a5f4fbe-b60f-4f5f-a90d-80c15b7eccdf",
+                "name": "output",
+                "value": "={{ (() => { const src = $json.price_results || $json.results || $json.offers || []; const items = Array.isArray(src) ? src.slice(0,3) : []; const lines = []; if (!items.length) { lines.push('I could not find prices yet. Can you specify the product or merchant?'); } else { lines.push('Best options I found:'); items.forEach(it => { const merchant = it.merchant || ''; const price = it.price || ''; const title = it.title || ''; const link = it.link || ''; const line = `• ${merchant} – ${price} – ${title}${link ? ' (' + link + ')' : ''}`; lines.push(line); }); } lines.push('Tip: Check student plans and cancel unused subscriptions to save more.'); lines.push('☑️ Want me to set a monthly cap or alerts for this category?'); return lines.join('\\n'); })() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1824,
+          720
+        ],
+        "id": "dd2729fd-fefe-493c-b807-2202105c4192",
+        "name": "Compose Message - Price"
+      },
+      {
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"runAnalyst\": { \"type\": \"boolean\", \"description\": \"Exactly one of runAnalyst or runPrice must be true.\" },\n    \"runPrice\": { \"type\": \"boolean\", \"description\": \"Exactly one of runAnalyst or runPrice must be true.\" },\n    \"price_queries\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 0,\n      \"maxItems\": 3,\n      \"description\": \"If runPrice=true, include 1–3 concise queries; otherwise leave empty.\"\n    },\n    \"questions_for_user\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 0,\n      \"maxItems\": 2\n    }\n  },\n  \"required\": [\"runAnalyst\", \"runPrice\", \"price_queries\", \"questions_for_user\"]\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3,
+        "position": [
+          -2944,
+          396
+        ],
+        "id": "4bb0c29c-fbb3-42f6-844a-1556e821899f",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"insights\": { \"type\": \"array\", \"items\": { \"type\": \"string\" }, \"minItems\": 0, \"maxItems\": 5 },\n    \"top_actions\": { \"type\": \"array\", \"items\": { \"type\": \"string\" }, \"minItems\": 0, \"maxItems\": 5 },\n    \"savings_estimate\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"weekly\": { \"type\": \"number\" },\n        \"monthly\": { \"type\": \"number\" }\n      }\n    }\n  },\n  \"required\": []\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3,
+        "position": [
+          -1968,
+          416
+        ],
+        "id": "2d6d85b9-259a-4e26-8d6a-e597f7f31d8d",
+        "name": "Structured Output Parser (Analyst)"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "user_profiles",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "user_id",
+                "keyValue": "={{ $json.user_id }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -3648,
+          172
+        ],
+        "id": "21b4424b-f958-41d3-9a13-458058992590",
+        "name": "Fetch User Profile",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "4lrtFcWMFMluvyaj",
+            "name": "Supabase account"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "user-context-merge-001",
+                "name": "user_id",
+                "value": "={{ $('Edit Fields').item.json.user_id }}",
+                "type": "string"
+              },
+              {
+                "id": "user-context-merge-002",
+                "name": "chat_id",
+                "value": "={{ $('Edit Fields').item.json.chat_id }}",
+                "type": "string"
+              },
+              {
+                "id": "user-context-merge-003",
+                "name": "user_text",
+                "value": "={{ $('Edit Fields').item.json.user_text }}",
+                "type": "string"
+              },
+              {
+                "id": "user-context-merge-004",
+                "name": "sessionId",
+                "value": "={{ $('Edit Fields').item.json.sessionId }}",
+                "type": "string"
+              },
+              {
+                "id": "user-context-merge-005",
+                "name": "user_profile",
+                "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return { monthly_income: null, monthly_spending: {}, categories: { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: {}, spending_goals: [], last_updated: null, total_conversations: 0 }; } return { monthly_income: profile.monthly_income || null, monthly_spending: profile.monthly_spending || {}, categories: profile.categories || { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: profile.budget_limits || {}, spending_goals: profile.spending_goals || [], last_updated: profile.last_updated || null, total_conversations: (profile.total_conversations || 0) + 1, notes: profile.notes || '' }; })() }}",
+                "type": "object"
+              },
+              {
+                "id": "user-context-merge-006",
+                "name": "user_context_summary",
+                "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return 'New user - no previous data.'; } const parts = []; if (profile.monthly_income) { parts.push(`Monthly income: $${profile.monthly_income}`); } const cats = profile.categories || {}; const spending = []; if (cats.groceries) spending.push(`Groceries: $${cats.groceries}`); if (cats.gas) spending.push(`Gas: $${cats.gas}`); if (cats.dining) spending.push(`Dining: $${cats.dining}`); if (cats.entertainment) spending.push(`Entertainment: $${cats.entertainment}`); if (spending.length) { parts.push(`Monthly spending - ${spending.join(', ')}`); } const limits = profile.budget_limits || {}; if (Object.keys(limits).length) { parts.push(`Budget limits set for: ${Object.keys(limits).join(', ')}`); } if (profile.spending_goals && profile.spending_goals.length) { parts.push(`Goals: ${profile.spending_goals.join('; ')}`); } if (profile.notes) { parts.push(`Notes: ${profile.notes}`); } return parts.length ? parts.join(' | ') : 'User exists but no financial data yet.'; })() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -3424,
+          172
+        ],
+        "id": "97ff24c9-9d04-4aa4-a943-e94c228160b7",
+        "name": "Merge User Context"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Message Trigger').first().json.message.chat.id }}",
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          -1328,
+          144
+        ],
+        "id": "e2b9799c-876b-4eb8-8308-fca827eeae07",
+        "name": "Simple Memory (Direct Response)"
+      },
+      {
+        "parameters": {
+          "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+          "additionalParameters": {}
+        },
+        "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+        "typeVersion": 1,
+        "position": [
+          -1200,
+          144
+        ],
+        "id": "1aa01ea3-f4bc-42a4-858f-20004b2bf421",
+        "name": "Brave Search (Direct Response)",
+        "credentials": {
+          "braveSearchApi": {
+            "id": "vr0EyDuMtCwAFnz6",
+            "name": "Brave Search account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Direct Response AI Assistant\n\nYou are a helpful AI assistant for Budget Guardian. Answer the user's query directly using web search when needed.\n\n**USER FINANCIAL PROFILE:**\n{{ $('Merge User Context').item.json.user_context_summary || 'New user - no previous data.' }}\n\nFor queries about finding products, prices, or locations:\n- Use Brave Search to find current information\n- Include specific store names and locations\n- Mention prices when available\n- Provide addresses or specific locations in the user's area\n- If the user mentions a city (like Waterloo, Kitchener, etc.), focus on that area\n- Consider their budget and spending patterns when recommending options\n\nFor financial questions:\n- Reference their known income and spending categories\n- Provide personalized advice based on their profile\n- If they share NEW financial info (income, spending amounts), acknowledge it\n\nFor general queries:\n- Provide helpful, concise answers\n- Use search when you need current information\n- Be friendly and conversational\n\nUser query: {{ $json.user_text || $('Edit Fields').item.json.user_text }}",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          -1424,
+          -80
+        ],
+        "id": "af92a2a2-d310-4b05-ba43-57296a6d9b46",
+        "name": "AI Agent - Direct Response"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "e5f6a7b8-c9d0-1234-ef01-345678901234",
+                "name": "output",
+                "value": "={{ (() => { const response = $json.output || $json.text || $json.response || ''; if (typeof response === 'string' && response.trim()) { return response; } return 'I found some information for you, but had trouble formatting it. Please try rephrasing your question.'; })() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -992,
+          80
+        ],
+        "id": "7866e891-22d0-40d2-8fbd-86c82e5d898f",
+        "name": "Compose Message - Direct"
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Message Trigger').first().json.message.chat.id }}",
+          "text": "={{ $json.output }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          -624,
+          128
+        ],
+        "id": "644d97ae-8a4e-432d-95d6-21c5dd5886ab",
+        "name": "Reply in Telegram (Direct)",
+        "webhookId": "direct-response-webhook-id",
+        "credentials": {
+          "telegramApi": {
+            "id": "sl2XyaTKmEdfH4KK",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "extract-profile-001",
+                "name": "user_id",
+                "value": "={{ $('Merge User Context').item.json.user_id }}",
+                "type": "string"
+              },
+              {
+                "id": "extract-profile-002",
+                "name": "monthly_income",
+                "value": "={{ (() => { const text = ($json.output || $json.user_text || '').toLowerCase(); const existing = $('Merge User Context').item.json.user_profile?.monthly_income; const incomeMatch = text.match(/(?:income|earn|make|salary).*?\\$?([0-9,]+)/i); if (incomeMatch) { return parseFloat(incomeMatch[1].replace(/,/g, '')); } const perMonth = text.match(/\\$?([0-9,]+)\\s*(?:per month|monthly|a month)/i); if (perMonth) { return parseFloat(perMonth[1].replace(/,/g, '')); } return existing || null; })() }}",
+                "type": "number"
+              },
+              {
+                "id": "extract-profile-003",
+                "name": "categories",
+                "value": "={{ (() => { const text = ($json.output || $json.user_text || '').toLowerCase(); const existing = $('Merge User Context').item.json.user_profile?.categories || {}; const categories = { ...existing }; const patterns = [ { key: 'groceries', regex: /(?:groceries|food|supermarket).*?\\$?([0-9,]+)/i }, { key: 'gas', regex: /(?:gas|fuel|petrol).*?\\$?([0-9,]+)/i }, { key: 'dining', regex: /(?:dining|restaurant|eating out).*?\\$?([0-9,]+)/i }, { key: 'entertainment', regex: /(?:entertainment|movies|streaming).*?\\$?([0-9,]+)/i }, { key: 'utilities', regex: /(?:utilities|bills|electricity|water|internet).*?\\$?([0-9,]+)/i } ]; patterns.forEach(p => { const match = text.match(p.regex); if (match) { categories[p.key] = parseFloat(match[1].replace(/,/g, '')); } }); return categories; })() }}",
+                "type": "object"
+              },
+              {
+                "id": "extract-profile-004",
+                "name": "budget_limits",
+                "value": "={{ $('Merge User Context').item.json.user_profile?.budget_limits || {} }}",
+                "type": "object"
+              },
+              {
+                "id": "extract-profile-005",
+                "name": "spending_goals",
+                "value": "={{ $('Merge User Context').item.json.user_profile?.spending_goals || [] }}",
+                "type": "json"
+              },
+              {
+                "id": "extract-profile-006",
+                "name": "total_conversations",
+                "value": "={{ ($('Merge User Context').item.json.user_profile?.total_conversations || 0) + 1 }}",
+                "type": "number"
+              },
+              {
+                "id": "extract-profile-007",
+                "name": "last_updated",
+                "value": "={{ $now.toISO() }}",
+                "type": "string"
+              },
+              {
+                "id": "extract-profile-008",
+                "name": "notes",
+                "value": "={{ $('Merge User Context').item.json.user_profile?.notes || '' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -208,
+          128
+        ],
+        "id": "7a72ee4e-4a7f-4bcb-8e1b-b8661a56ee17",
+        "name": "Extract Profile Updates"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "check-user-exists-001",
+                "leftValue": "={{ $('Fetch User Profile').item.json.user_id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          16,
+          128
+        ],
+        "id": "e3df395a-ca22-4ee6-9dec-91ba4555e51d",
+        "name": "Check if User Exists"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "user_profiles",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "user_id",
+                "condition": "eq",
+                "keyValue": "={{ $json.user_id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "monthly_income",
+                "fieldValue": "={{ $json.monthly_income }}"
+              },
+              {
+                "fieldId": "categories",
+                "fieldValue": "={{ $json.categories }}"
+              },
+              {
+                "fieldId": "budget_limits",
+                "fieldValue": "={{ $json.budget_limits }}"
+              },
+              {
+                "fieldId": "spending_goals",
+                "fieldValue": "={{ $json.spending_goals }}"
+              },
+              {
+                "fieldId": "total_conversations",
+                "fieldValue": "={{ $json.total_conversations }}"
+              },
+              {
+                "fieldId": "last_updated",
+                "fieldValue": "={{ $json.last_updated }}"
+              },
+              {
+                "fieldId": "notes",
+                "fieldValue": "={{ $json.notes }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          240,
+          32
+        ],
+        "id": "8396a9bd-ae82-42b2-842a-fa13fb0db0af",
+        "name": "Update User Profile",
+        "credentials": {
+          "supabaseApi": {
+            "id": "4lrtFcWMFMluvyaj",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "user_profiles",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "user_id",
+                "fieldValue": "={{ $json.user_id }}"
+              },
+              {
+                "fieldId": "monthly_income",
+                "fieldValue": "={{ $json.monthly_income }}"
+              },
+              {
+                "fieldId": "categories",
+                "fieldValue": "={{ $json.categories }}"
+              },
+              {
+                "fieldId": "budget_limits",
+                "fieldValue": "={{ $json.budget_limits }}"
+              },
+              {
+                "fieldId": "spending_goals",
+                "fieldValue": "={{ $json.spending_goals }}"
+              },
+              {
+                "fieldId": "total_conversations",
+                "fieldValue": "={{ $json.total_conversations }}"
+              },
+              {
+                "fieldId": "last_updated",
+                "fieldValue": "={{ $json.last_updated }}"
+              },
+              {
+                "fieldId": "notes",
+                "fieldValue": "={{ $json.notes }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          240,
+          224
+        ],
+        "id": "aeed020a-35ca-4556-b0aa-893ee039dd04",
+        "name": "Create User Profile",
+        "credentials": {
+          "supabaseApi": {
+            "id": "4lrtFcWMFMluvyaj",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a31a1f3e-2a90-4a4e-8f0a-6b0b2b4f2c01",
+                "name": "runAnalyst",
+                "value": "={{ (() => { const toBool = (v) => { if (typeof v === 'boolean') return v; if (typeof v === 'string') { const s = v.trim().toLowerCase(); if (['true','1','yes','y'].includes(s)) return true; if (['false','0','no','n'].includes(s)) return false; } if (typeof v === 'number') return v !== 0; return false; }; const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const text = getText(); const t = text.toLowerCase(); const hints = ['price','prices','cheaper','cheap','cheapest','deal','deals','discount','discounts','coupon','coupons','promo','code','compare','comparison','student plan','student discount','bundle','bundles','where to buy','retailer','merchant','buy','purchase','cost','costs','renewal','subscription price','sale','sales','promo code','best deal','best price','cheapest place']; const hasPrice = hints.some(k => t.indexOf(k) !== -1); const plannerPrice = toBool($json.runPrice); const price = hasPrice || plannerPrice; return !price; })() }}",
+                "type": "boolean"
+              },
+              {
+                "id": "b52b8c2a-2c63-4f3a-94cc-0e56d7a7c1f2",
+                "name": "runPrice",
+                "value": "={{ (() => { const toBool = (v) => { if (typeof v === 'boolean') return v; if (typeof v === 'string') { const s = v.trim().toLowerCase(); if (['true','1','yes','y'].includes(s)) return true; if (['false','0','no','n'].includes(s)) return false; } if (typeof v === 'number') return v !== 0; return false; }; const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const t = getText().toLowerCase(); const hints = ['price','prices','cheaper','cheap','cheapest','deal','deals','discount','discounts','coupon','coupons','promo','code','compare','comparison','student plan','student discount','bundle','bundles','where to buy','retailer','merchant','buy','purchase','cost','costs','renewal','subscription price','sale','sales','promo code','best deal','best price','cheapest place']; const hasPrice = hints.some(k => t.indexOf(k) !== -1); const plannerPrice = toBool($json.runPrice); return hasPrice || plannerPrice; })() }}",
+                "type": "boolean"
+              },
+              {
+                "id": "a28821b7-2b62-4cd2-8beb-b00b02d3d33d",
+                "name": "user_text",
+                "value": "={{ (() => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; })() }}",
+                "type": "string"
+              },
+              {
+                "id": "da2b7fb9-7b0d-4a81-9f55-fb0e5d7145bb",
+                "name": "price_queries",
+                "value": "={{ (() => { const toBool = (v) => { if (typeof v === 'boolean') return v; if (typeof v === 'string') { const s = v.trim().toLowerCase(); if (['true','1','yes','y'].includes(s)) return true; if (['false','0','no','n'].includes(s)) return false; } if (typeof v === 'number') return v !== 0; return false; }; const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const rawText = getText(); const textLower = rawText.toLowerCase(); const hints = ['price','prices','cheaper','cheap','cheapest','deal','deals','discount','discounts','coupon','coupons','promo','code','compare','comparison','student plan','student discount','bundle','bundles','where to buy','retailer','merchant','buy','purchase','cost','costs','renewal','subscription price','sale','sales','promo code','best deal','best price','cheapest place']; const hasPrice = hints.some(k => textLower.indexOf(k) !== -1); const plannerPrice = toBool($json.runPrice); const shouldPrice = hasPrice || plannerPrice; const existing = Array.isArray($json.price_queries) ? $json.price_queries.filter(q => typeof q === 'string' && q.trim().length) : []; if (!shouldPrice) { return []; } if (existing.length) { return existing.slice(0,3); } const stop = new Set(['find','me','please','you','help','need','want','would','like','look','looking','for','a','an','the','cheap','cheaper','cheapest','price','prices','cost','costs','deal','deals','discount','discounts','where','to','buy','get','in','near','around','waterloo','ontario','canada']); const tokens = rawText.split(/[^a-zA-Z0-9]+/).map(t => t.trim()).filter(Boolean); const filtered = tokens.filter(t => { const lower = t.toLowerCase(); if (stop.has(lower)) return false; return /^[a-z0-9]+$/i.test(t); }); const productTokens = filtered.map(t => t.replace(/^[\"'`]+|[\"'`]+$/g, '')); const product = productTokens.length ? productTokens.join(' ') : (rawText.trim() || 'grocery item'); const location = (() => { if (textLower.includes('kitchener')) return 'Kitchener Ontario'; if (textLower.includes('cambridge')) return 'Cambridge Ontario'; if (textLower.includes('toronto')) return 'Toronto Ontario'; if (textLower.includes('guelph')) return 'Guelph Ontario'; return 'Waterloo Ontario'; })(); const base = product.trim(); const queries = []; const seen = new Set(); const pushQuery = (q) => { const key = q.toLowerCase(); if (!seen.has(key) && q.trim()) { seen.add(key); queries.push(q.trim()); } }; pushQuery('best price ' + base + ' ' + location); pushQuery('cheap ' + base + ' deals ' + location); pushQuery(base + ' discount ' + location); if (!queries.length) { pushQuery(base + ' price ' + location); } return queries.slice(0,3); })() }}",
+                "type": "json"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -2704,
+          512
+        ],
+        "id": "d22b9542-8766-4f6e-9006-9ae6ed2dad52",
+        "name": "Sub Agentic Task"
+      },
+      {
+        "parameters": {
+          "model": "openai/gpt-oss-120b",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+        "typeVersion": 1,
+        "position": [
+          -2944,
+          -192
+        ],
+        "id": "7ecf191e-5158-4215-910c-cc277dd7e0a9",
+        "name": "Groq Chat Model",
+        "credentials": {
+          "groqApi": {
+            "id": "AFEhhW2jthXCot4t",
+            "name": "Groq account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "audio",
+          "operation": "transcribe",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.8,
+        "position": [
+          -4096,
+          76
+        ],
+        "id": "7065f799-0691-4533-a61c-2b49f5c97f0b",
+        "name": "Transcribe audio",
+        "credentials": {
+          "openAiApi": {
+            "id": "n7FcR0fOh99ziM2b",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1-nano",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1-nano"
+          },
+          "options": {
+            "temperature": 0
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          -2288,
+          928
+        ],
+        "id": "58bf4150-cc6a-4408-9efc-b228efb8017e",
+        "name": "OpenAI Chat Model (Data Retrieval)",
+        "credentials": {
+          "openAiApi": {
+            "id": "n7FcR0fOh99ziM2b",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "options": {
+            "temperature": 0.7
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          -1456,
+          144
+        ],
+        "id": "5abc8af6-f0e5-41c8-8577-5650ec9448f8",
+        "name": "OpenAI Chat Model (Direct Response)",
+        "credentials": {
+          "openAiApi": {
+            "id": "n7FcR0fOh99ziM2b",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          -2624,
+          -336
+        ],
+        "id": "b3c20022-ede2-4203-859d-31f04942dc11",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1-nano",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1-nano"
+          },
+          "options": {
+            "temperature": 0
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          -2224,
+          416
+        ],
+        "id": "747d77b6-904d-4505-bbdc-9cd66fd87644",
+        "name": "OpenAI Chat Model (Analyst)",
+        "credentials": {
+          "openAiApi": {
+            "id": "n7FcR0fOh99ziM2b",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1-nano",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1-nano"
+          },
+          "options": {
+            "temperature": 0
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          -3200,
+          396
+        ],
+        "id": "1eed9a84-a0f0-48c6-af21-3ca95918c703",
+        "name": "OpenAI Chat Model (Planner)",
+        "credentials": {
+          "openAiApi": {
+            "id": "n7FcR0fOh99ziM2b",
+            "name": "OpenAi account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Telegram Message Trigger": {
+        "main": [
+          [
+            {
+              "node": "Check if Audio file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check if Audio file": {
+        "main": [
+          [
+            {
+              "node": "Get a file",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set field",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a file": {
+        "main": [
+          [
+            {
+              "node": "Transcribe audio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set field": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Fetch User Profile",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory (Planner)": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent - Planner",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent - Planner": {
+        "main": [
+          [
+            {
+              "node": "Sub Agentic Task",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "AI Agent - Direct Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If runAnalyst?": {
+        "main": [
+          [
+            {
+              "node": "AI Agent - Analyst",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If runPrice?": {
+        "main": [
+          [
+            {
+              "node": "AI Agent - Data Retrieval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory (Analyst)": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent - Analyst",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent - Analyst": {
+        "main": [
+          [
+            {
+              "node": "Compose Message - Analyst",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Compose Message - Analyst": {
+        "main": [
+          [
+            {
+              "node": "AI Agent - Direct Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Brave Search (Retrieval)": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent - Data Retrieval",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory (Retrieval)": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent - Data Retrieval",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser (Retrieval)": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "AI Agent - Data Retrieval",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent - Data Retrieval": {
+        "main": [
+          [
+            {
+              "node": "Compose Message - Price",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Compose Message - Price": {
+        "main": [
+          [
+            {
+              "node": "AI Agent - Direct Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "AI Agent - Planner",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser (Analyst)": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "AI Agent - Analyst",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch User Profile": {
+        "main": [
+          [
+            {
+              "node": "Merge User Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge User Context": {
+        "main": [
+          [
+            {
+              "node": "AI Agent - Planner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory (Direct Response)": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent - Direct Response",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Brave Search (Direct Response)": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent - Direct Response",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent - Direct Response": {
+        "main": [
+          [
+            {
+              "node": "Compose Message - Direct",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Compose Message - Direct": {
+        "main": [
+          [
+            {
+              "node": "Reply in Telegram (Direct)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reply in Telegram (Direct)": {
+        "main": [
+          [
+            {
+              "node": "Extract Profile Updates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Profile Updates": {
+        "main": [
+          [
+            {
+              "node": "Check if User Exists",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check if User Exists": {
+        "main": [
+          [
+            {
+              "node": "Update User Profile",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Create User Profile",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sub Agentic Task": {
+        "main": [
+          [
+            {
+              "node": "If runAnalyst?",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "If runPrice?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Groq Chat Model": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Transcribe audio": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model (Data Retrieval)": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent - Data Retrieval",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model (Direct Response)": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent - Direct Response",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model (Analyst)": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent - Analyst",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model (Planner)": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent - Planner",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "413509e3cb2730893b274ddf5c9e4497db5bb8d9e8033d511e51a211c7e12940"
+    }
+  }

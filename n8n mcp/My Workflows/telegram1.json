@@ -1,0 +1,1730 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-photo-001",
+              "leftValue": "={{ $json.message.photo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3152,
+        992
+      ],
+      "id": "2308bce4-2151-4080-ae20-431313b04460",
+      "name": "Check if Image"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[$json.message.photo.length - 1].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2784,
+        976
+      ],
+      "id": "2829085b-4fea-4d92-a724-56d3f7d13691",
+      "name": "Get Image File",
+      "webhookId": "get-image-webhook-001",
+      "credentials": {
+        "telegramApi": {
+          "id": "sl2XyaTKmEdfH4KK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "inputType": "base64",
+        "binaryPropertyName": "={{ Object.keys($binary)[0] || 'data' }}",
+        "options": {
+          "detail": "high"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2400,
+        976
+      ],
+      "id": "d4203b12-ad53-4aba-bb76-be99980f318a",
+      "name": "Analyze Receipt with Vision",
+      "credentials": {
+        "openAiApi": {
+          "id": "n7FcR0fOh99ziM2b",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-expense-001",
+              "name": "text",
+              "value": "={{ (() => { try { let rawResponse = $json.response || $json.content || $json.text || $json.message || ''; let analysis = null; let amount = 0; let category = 'other'; let merchant = 'Unknown'; let items = ''; if (typeof rawResponse === 'object') { analysis = rawResponse; } else if (typeof rawResponse === 'string') { try { analysis = JSON.parse(rawResponse); } catch (parseErr) { const text = rawResponse; const totalMatch = text.match(/\\*\\*(?:Sub\\s*)?Total:\\*\\*.*?\\$([0-9,]+(?:\\.[0-9]{2})?)|(?:Sub\\s*)?Total:?\\s*\\$([0-9,]+(?:\\.[0-9]{2})?)|(?:SUB\\s*)?TOTAL.*?\\$([0-9,]+(?:\\.[0-9]{2})?)/i); if (totalMatch) { const matched = totalMatch[1] || totalMatch[2] || totalMatch[3]; amount = parseFloat(matched.replace(/,/g, '')) || 0; } const merchantMatch = text.match(/(?:from|at|receipt from)\\s+[\"']?([A-Za-z0-9\\s&]+)[\"']?/i) || text.match(/\\*\\*Store Name:\\*\\*\\s*([A-Z][A-Za-z0-9\\s&]+)/i) || text.match(/^([A-Z][A-Za-z0-9\\s&]+)(?:located|at|\\n)/m); if (merchantMatch) { merchant = merchantMatch[1].trim(); } const categoryKeywords = { 'groceries': /grocery|groceries|supermarket|food/i, 'gas': /gas|fuel|petrol/i, 'dining': /restaurant|dining|cafe|coffee/i, 'entertainment': /entertainment|movie|game/i, 'utilities': /utilities|electric|water/i }; for (const [cat, regex] of Object.entries(categoryKeywords)) { if (regex.test(text)) { category = cat; break; } } } } if (analysis && typeof analysis === 'object') { amount = parseFloat(analysis.amount) || amount; category = analysis.category || category; merchant = analysis.merchant || merchant; items = Array.isArray(analysis.items) ? analysis.items.join(', ') : (analysis.items || ''); } if (amount > 0) { return `Receipt processed: $${amount.toFixed(2)} at ${merchant} for ${category}${items ? ' (' + items + ')' : ''}`; } return 'Image received but no expense found'; } catch (e) { return 'Receipt image processed - error: ' + e.message; } })() }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-expense-002",
+              "name": "expense_data",
+              "value": "={{ (() => { try { let rawResponse = $json.response || $json.content || $json.text || $json.message || ''; let analysis = null; let amount = 0; let category = 'other'; let merchant = 'Unknown'; let date = $now.toISO(); let items = []; let payment_method = 'unknown'; let notes = ''; if (typeof rawResponse === 'object') { analysis = rawResponse; } else if (typeof rawResponse === 'string') { try { analysis = JSON.parse(rawResponse); } catch (parseErr) { const text = rawResponse; const totalMatch = text.match(/\\*\\*(?:Sub\\s*)?Total:\\*\\*.*?\\$([0-9,]+(?:\\.[0-9]{2})?)|(?:Sub\\s*)?Total:?\\s*\\$([0-9,]+(?:\\.[0-9]{2})?)|(?:SUB\\s*)?TOTAL.*?\\$([0-9,]+(?:\\.[0-9]{2})?)/i); if (totalMatch) { const matched = totalMatch[1] || totalMatch[2] || totalMatch[3]; amount = parseFloat(matched.replace(/,/g, '')) || 0; } const merchantMatch = text.match(/(?:from|at|receipt from)\\s+[\"']?([A-Za-z0-9\\s&]+)[\"']?/i) || text.match(/\\*\\*Store Name:\\*\\*\\s*([A-Z][A-Za-z0-9\\s&]+)/i) || text.match(/^([A-Z][A-Za-z0-9\\s&]+)(?:located|at|\\n)/m); if (merchantMatch) { merchant = merchantMatch[1].trim(); } const categoryKeywords = { 'groceries': /grocery|groceries|supermarket|food/i, 'gas': /gas|fuel|petrol/i, 'dining': /restaurant|dining|cafe|coffee/i, 'entertainment': /entertainment|movie|game/i, 'utilities': /utilities|electric|water/i }; for (const [cat, regex] of Object.entries(categoryKeywords)) { if (regex.test(text)) { category = cat; break; } } notes = 'Parsed from text description'; } } if (analysis && typeof analysis === 'object') { amount = parseFloat(analysis.amount) || amount; category = analysis.category || category; merchant = analysis.merchant || merchant; date = analysis.date || date; items = analysis.items || items; payment_method = analysis.payment_method || payment_method; notes = analysis.notes || notes; } return { amount: amount, category: category, merchant: merchant, date: date, items: items, payment_method: payment_method, notes: notes }; } catch (e) { return { amount: 0, category: 'other', merchant: 'Unknown', date: $now.toISO(), items: [], payment_method: 'unknown', notes: 'Failed to parse receipt: ' + e.message }; } })() }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2000,
+        976
+      ],
+      "id": "165ee7ad-23b0-4856-9e02-508aa4e2e687",
+      "name": "Format Expense Data"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": false
+        }
+      },
+      "id": "be3d4ba0-7ff3-4bc3-86cf-90dd9a7ddf58",
+      "name": "Telegram Message Trigger1",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3792,
+        992
+      ],
+      "webhookId": "61396260-c024-467a-a04e-d71e2ef4fc83",
+      "credentials": {
+        "telegramApi": {
+          "id": "sl2XyaTKmEdfH4KK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2b538077-d3d3-4713-b973-68748313ff97",
+              "leftValue": "={{ $json.message.voice }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3088,
+        560
+      ],
+      "id": "7d0b6a6f-790e-480c-adf7-43088416aaec",
+      "name": "Check if Audio file1"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2672,
+        528
+      ],
+      "id": "c3fa0d21-0a68-4064-bf48-7c77e4d3a4aa",
+      "name": "Get a file1",
+      "webhookId": "a50f0104-6e43-4a08-90f5-3e1dc050e450",
+      "credentials": {
+        "telegramApi": {
+          "id": "sl2XyaTKmEdfH4KK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-text-001",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3056,
+        1456
+      ],
+      "id": "c6987d1b-e873-4f66-a8cf-bbb2a564656f",
+      "name": "Check if Text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb912219-2436-4f04-8ffc-c1c20eb07344",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2240,
+        1472
+      ],
+      "id": "27b26893-f9cb-4cae-bbba-2aa523a92310",
+      "name": "Set field1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b78b673d-95a4-4d7c-b6a8-91e25c1d368d",
+              "name": "user_id",
+              "value": "={{ $node[\"Telegram Message Trigger1\"].json.message?.from?.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7bb91beb-c6de-414e-ad16-3a029b337bcd",
+              "name": "chat_id",
+              "value": "={{ $node[\"Telegram Message Trigger1\"].json.message?.chat?.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d3ba7439-af55-4838-b22d-bfb71a07472e",
+              "name": "user_text",
+              "value": "={{ $json.text || $json.transcription || $node[\"Telegram Message Trigger1\"].json.message?.text || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "d4a517fd-6abe-4980-a2ae-9efc6101ff3b",
+              "name": "ts",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "0a5d5b7b-0f36-4b79-9a9b-7d2a99b86a1f",
+              "name": "sessionId",
+              "value": "={{ $node[\"Telegram Message Trigger1\"].json.message?.chat?.id }}",
+              "type": "string"
+            },
+            {
+              "id": "expense-data-field-001",
+              "name": "expense_data",
+              "value": "={{ $json.expense_data || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1520,
+        976
+      ],
+      "id": "e5391c83-c4e1-4559-b6d2-58d803fe713a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Message Trigger1').first().json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -720,
+        752
+      ],
+      "id": "12b679a2-6bc5-4f9c-bf12-cdd0fd9ca1bc",
+      "name": "Simple Memory (Planner)1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Planner for Budget Guardian\n\nAnalyze the user's message and return ONLY a JSON object with these exact fields:\n- runAnalyst (boolean): true for budget/spending/savings analysis, false otherwise\n- runPrice (boolean): true for price/deal/discount searches, false otherwise  \n- price_queries (array): 1-3 search queries if runPrice=true, empty array otherwise\n- questions_for_user (array): up to 2 clarifying questions if needed, empty array otherwise\n\nRules:\n- Exactly ONE of runAnalyst or runPrice must be true (not both)\n- Default to runAnalyst=true if unclear\n- DO NOT use any tools or provide commentary\n- Respond ONLY with the structured data\n\nUser text: {{ $json.user_text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a JSON classifier. Respond ONLY with valid JSON matching the requested schema. Never use tools or function calls."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -816,
+        528
+      ],
+      "id": "8100fdf7-93b6-4b60-8fc3-6956a36f5173",
+      "name": "AI Agent - Planner1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dcc09466-5438-4cf2-91ce-4773837a6a31",
+              "leftValue": "={{ $json.runAnalyst }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        976
+      ],
+      "id": "3560c935-efe2-490d-9915-e8299d822f90",
+      "name": "If runAnalyst?1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dcc09466-5438-4cf2-91ce-4773837a6a31",
+              "leftValue": "={{ $json.runPrice }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        1440
+      ],
+      "id": "c1205910-ac6d-4b1a-8f4a-bad57a923e43",
+      "name": "If runPrice?1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Message Trigger1').first().json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        1136
+      ],
+      "id": "58aa9a78-1ec3-4b46-a391-8ac18f18f1dc",
+      "name": "Simple Memory (Analyst)1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Financial Analyst Agent\nAnalyze the user's spending text and any embedded transactions (JSON/CSV-like). When data is missing, infer cautiously and ask for what's needed.\nReturn ONLY the fields defined by the connected output parser: insights, top_actions, savings_estimate. Use short strings for arrays.\n\n**USER FINANCIAL PROFILE:**\n{{ $('Merge User Context1').item.json.user_context_summary || 'New user - no previous data.' }}\n\nInput:\n- user_text: {{ $json.user_text }}\n\nConsider the user's historical spending patterns and income when providing insights. If they mention new spending or income, factor it into your analysis.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        912
+      ],
+      "id": "80f7af36-2694-4694-bda9-c6e8fc54af98",
+      "name": "AI Agent - Analyst1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2d611c7-9833-4cde-8a90-bfb6864a53b0",
+              "name": "output",
+              "value": "={{ (() => { const a = (typeof $json.analysis === 'object' && $json.analysis) ? $json.analysis : $json; const insights = Array.isArray(a.insights) ? a.insights.slice(0,3) : []; const actions = Array.isArray(a.top_actions) ? a.top_actions.slice(0,3) : []; const se = a.savings_estimate || {}; const weekly = typeof se.weekly === 'number' ? se.weekly : null; const monthly = typeof se.monthly === 'number' ? se.monthly : null; const lines = []; const getUserText = () => { const fromCurrent = $json.user_text; if (typeof fromCurrent === 'string' && fromCurrent.trim().length) return fromCurrent; const fromNormalize = $('Sub Agentic Task1').item.json.user_text; if (typeof fromNormalize === 'string' && fromNormalize.trim().length) return fromNormalize; const fromEdit = $('Edit Fields1').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; if (actions.length || insights.length || weekly !== null || monthly !== null) { lines.push('Here's your quick budget check-in:'); if (actions.length) { lines.push('Top actions:'); actions.forEach((t,i)=>lines.push(`${i+1}. ${t}`)); } if (weekly !== null || monthly !== null) { const w = weekly !== null ? `$${weekly.toFixed(2)}/wk` : ''; const m = monthly !== null ? ` (~$${monthly.toFixed(2)}/mo)` : ''; lines.push(`Est. savings: ${w}${m}`.trim()); } if (insights.length) { lines.push('Notes: ' + insights.join(' | ')); } } else { const ut = getUserText().slice(0,120); if (ut) { lines.push('Got it: ' + ut + '.'); } lines.push('Tell me the goal: analyze your spending or find cheaper options?'); } lines.push('☑️ Want me to set limits or track a category this week?'); return lines.join('\\n'); })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        976,
+        960
+      ],
+      "id": "af265f00-eed9-4f96-870d-5ca940247c48",
+      "name": "Compose Message - Analyst1"
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "additionalParameters": {}
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+      "typeVersion": 1,
+      "position": [
+        752,
+        1664
+      ],
+      "id": "7f4ea120-d331-40ca-8d0e-64286d8ecfd5",
+      "name": "Brave Search (Retrieval)1",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "vr0EyDuMtCwAFnz6",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Message Trigger1').first().json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        1680
+      ],
+      "id": "189b0025-afee-442e-a88e-33bccf6ab901",
+      "name": "Simple Memory (Retrieval)1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"price_results\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"properties\": {\n          \"merchant\": { \"type\": \"string\" },\n          \"price\": { \"type\": \"string\" },\n          \"title\": { \"type\": \"string\" },\n          \"link\": { \"type\": \"string\" }\n        },\n        \"required\": []\n      },\n      \"minItems\": 0,\n      \"maxItems\": 5\n    }\n  },\n  \"required\": []\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        912,
+        1664
+      ],
+      "id": "45331e58-6ce8-4097-83d6-ca0f791dec5f",
+      "name": "Structured Output Parser (Retrieval)1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Data Retrieval Agent (price/deals)\nUse the Brave Search tool. If price_queries exist, start with those; otherwise derive queries. Look for student discounts, coupon codes, cheaper alternatives, bundles, and trustworthy merchants. Extract prices when possible.\nReturn ONLY price_results as per the connected parser with the 3–5 best results.\nInputs:\n- user_text: {{ $json.user_text }}\n- price_queries: {{ $json.price_queries || [] }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        1424
+      ],
+      "id": "3d1ccc57-f268-4341-8dab-3992e549cb05",
+      "name": "AI Agent - Data Retrieval1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a5f4fbe-b60f-4f5f-a90d-80c15b7eccdf",
+              "name": "output",
+              "value": "={{ (() => { const src = $json.price_results || $json.results || $json.offers || []; const items = Array.isArray(src) ? src.slice(0,3) : []; const lines = []; if (!items.length) { lines.push('I could not find prices yet. Can you specify the product or merchant?'); } else { lines.push('Best options I found:'); items.forEach(it => { const merchant = it.merchant || ''; const price = it.price || ''; const title = it.title || ''; const link = it.link || ''; const line = `• ${merchant} – ${price} – ${title}${link ? ' (' + link + ')' : ''}`; lines.push(line); }); } lines.push('Tip: Check student plans and cancel unused subscriptions to save more.'); lines.push('☑️ Want me to set a monthly cap or alerts for this category?'); return lines.join('\\n'); })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        944,
+        1456
+      ],
+      "id": "1e554bba-5221-43a9-87a2-1d91efc1ef8d",
+      "name": "Compose Message - Price1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"runAnalyst\": { \"type\": \"boolean\", \"description\": \"Exactly one of runAnalyst or runPrice must be true.\" },\n    \"runPrice\": { \"type\": \"boolean\", \"description\": \"Exactly one of runAnalyst or runPrice must be true.\" },\n    \"price_queries\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 0,\n      \"maxItems\": 3,\n      \"description\": \"If runPrice=true, include 1–3 concise queries; otherwise leave empty.\"\n    },\n    \"questions_for_user\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 0,\n      \"maxItems\": 2\n    }\n  },\n  \"required\": [\"runAnalyst\", \"runPrice\", \"price_queries\", \"questions_for_user\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -592,
+        752
+      ],
+      "id": "934515f2-6eb2-4d34-b1f5-4ccceb81edde",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"insights\": { \"type\": \"array\", \"items\": { \"type\": \"string\" }, \"minItems\": 0, \"maxItems\": 5 },\n    \"top_actions\": { \"type\": \"array\", \"items\": { \"type\": \"string\" }, \"minItems\": 0, \"maxItems\": 5 },\n    \"savings_estimate\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"weekly\": { \"type\": \"number\" },\n        \"monthly\": { \"type\": \"number\" }\n      }\n    }\n  },\n  \"required\": []\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        1136
+      ],
+      "id": "63bde78f-4b25-437a-a6ee-779652e04ced",
+      "name": "Structured Output Parser (Analyst)1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_id",
+              "keyValue": "={{ $json.user_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        752
+      ],
+      "id": "88e13076-07da-4062-8856-25d803f45c43",
+      "name": "Fetch User Profile1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "4lrtFcWMFMluvyaj",
+          "name": "Supabase account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "user-context-merge-001",
+              "name": "user_id",
+              "value": "={{ $('Edit Fields1').item.json.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "user-context-merge-002",
+              "name": "chat_id",
+              "value": "={{ $('Edit Fields1').item.json.chat_id }}",
+              "type": "string"
+            },
+            {
+              "id": "user-context-merge-003",
+              "name": "user_text",
+              "value": "={{ $('Edit Fields1').item.json.user_text }}",
+              "type": "string"
+            },
+            {
+              "id": "user-context-merge-004",
+              "name": "sessionId",
+              "value": "={{ $('Edit Fields1').item.json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "user-context-merge-005",
+              "name": "user_profile",
+              "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return { monthly_income: null, monthly_spending: {}, categories: { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: {}, spending_goals: [], last_updated: null, total_conversations: 0, total_budget: null, remaining_budget: null }; } return { monthly_income: profile.monthly_income || null, monthly_spending: profile.monthly_spending || {}, categories: profile.categories || { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: profile.budget_limits || {}, spending_goals: profile.spending_goals || [], last_updated: profile.last_updated || null, total_conversations: (profile.total_conversations || 0) + 1, notes: profile.notes || '', total_budget: profile.total_budget || null, remaining_budget: profile.remaining_budget || null }; })() }}",
+              "type": "object"
+            },
+            {
+              "id": "user-context-merge-006",
+              "name": "user_context_summary",
+              "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return 'New user - no previous data.'; } const parts = []; if (profile.total_budget) { parts.push(`Total Budget: $${profile.total_budget}${profile.remaining_budget !== null ? ` (Remaining: $${profile.remaining_budget.toFixed(2)})` : ''}`); } if (profile.monthly_income) { parts.push(`Monthly income: $${profile.monthly_income}`); } const limits = profile.budget_limits || {}; if (Object.keys(limits).length) { const limitStrs = []; for (const [cat, amt] of Object.entries(limits)) { if (amt) limitStrs.push(`${cat}: $${amt}`); } if (limitStrs.length) { parts.push(`Category Budgets: ${limitStrs.join(', ')}`); } } const cats = profile.categories || {}; const spending = []; if (cats.groceries) spending.push(`Groceries: $${cats.groceries}`); if (cats.gas) spending.push(`Gas: $${cats.gas}`); if (cats.dining) spending.push(`Dining: $${cats.dining}`); if (cats.entertainment) spending.push(`Entertainment: $${cats.entertainment}`); if (cats.utilities) spending.push(`Utilities: $${cats.utilities}`); if (cats.other) spending.push(`Other: $${cats.other}`); if (spending.length) { parts.push(`Current Month Spending - ${spending.join(', ')}`); } if (profile.spending_goals && profile.spending_goals.length) { parts.push(`Goals: ${profile.spending_goals.join('; ')}`); } if (profile.notes) { const recentNotes = profile.notes.split('\\n').slice(-3).join('; '); parts.push(`Recent: ${recentNotes}`); } return parts.length ? parts.join(' | ') : 'User exists but no financial data yet.'; })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1088,
+        512
+      ],
+      "id": "9f9ebc3b-b9ae-4ce8-95fc-49d5bd01e337",
+      "name": "Merge User Context1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Message Trigger1').first().json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        656
+      ],
+      "id": "7b55e8e5-781c-491b-8174-28eecb30b3e6",
+      "name": "Simple Memory (Direct Response)1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "detect-budget-query-flag",
+              "name": "is_budget_query",
+              "value": "={{ (() => { const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields1').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const textRaw = getText(); const text = textRaw.toLowerCase(); if (!text.includes('budget') && !text.includes('limit') && !text.includes('left in')) { return false; } const intentWords = ['what', 'how', 'show', 'tell', 'remind', 'check', 'do i have', 'whats', 'how much', 'how many']; const commandWords = ['set', 'update', 'change', 'adjust', 'increase', 'decrease', 'raise', 'lower', 'make', 'add']; const hasCommand = commandWords.some(w => text.includes(w + ' ')) || /set\\s+.*budget/.test(text); const hasQuestion = intentWords.some(w => text.includes(w)); const isQuestionMark = text.includes('?'); if ((hasQuestion || isQuestionMark) && !hasCommand) { return true; } if (!hasCommand && /what\\s+is\\s+my.*budget/.test(text)) { return true; } if (!hasCommand && /(remaining|left)\\s+(in|on)\\s+.*budget/.test(text)) { return true; } return false; })() }}",
+              "type": "boolean"
+            },
+            {
+              "id": "detect-budget-query-category",
+              "name": "budget_category",
+              "value": "={{ (() => { const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields1').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const text = getText().toLowerCase(); const categories = [ { key: 'groceries', words: ['grocery', 'groceries', 'food'] }, { key: 'gas', words: ['gas', 'fuel', 'petrol'] }, { key: 'dining', words: ['dining', 'restaurant', 'eating out', 'takeout'] }, { key: 'entertainment', words: ['entertainment', 'fun', 'movies', 'streaming'] }, { key: 'utilities', words: ['utilities', 'bills', 'electricity', 'water', 'internet'] }, { key: 'other', words: ['other', 'misc', 'miscellaneous'] } ]; for (const cat of categories) { if (cat.words.some(w => text.includes(w))) { return cat.key; } } if (text.includes('overall') || text.includes('total') || text.includes('monthly budget') || text.includes('whole budget')) { return 'overall'; } if (text.includes('budget') && !text.includes('grocer') && !text.includes('gas') && !text.includes('dining') && !text.includes('entertainment') && !text.includes('utilit')) { return 'overall'; } return ''; })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        576
+      ],
+      "id": "61f8eed4-2af4-4556-ad5a-fdb77eb79351",
+      "name": "Detect Budget Query1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-budget-query-condition-001",
+              "leftValue": "={{ $json.is_budget_query }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        640
+      ],
+      "id": "9ccbce0a-3d4c-42d3-94cf-85496d3085ed",
+      "name": "If Budget Query?1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "compose-budget-output-001",
+              "name": "output",
+              "value": "={{ (() => { const cat = ($json.budget_category || '').toLowerCase(); const profile = $('Merge User Context1').item.json.user_profile || {}; const budgetsDb = profile.budget_limits || {}; const spendingDb = profile.categories || {}; const detected = $json.expense_data || {}; const budgets = { ...budgetsDb }; const spending = { ...spendingDb }; if (detected && typeof detected === 'object' && detected.category) { const category = detected.category; if (typeof detected.amount === 'number' && isFinite(detected.amount)) { spending[category] = (typeof spending[category] === 'number' ? spending[category] : 0) + detected.amount; if (budgets[category] === undefined && detected.category_budget) { budgets[category] = detected.category_budget; } } } const fmt = (value) => (typeof value === 'number' && isFinite(value)) ? value.toFixed(2) : '0.00'; const lines = []; const buildCategoryLine = (category) => { const budgetValue = budgets[category]; const spentValue = spending[category] || 0; if (typeof budgetValue === 'number' && isFinite(budgetValue)) { const remaining = Math.max(0, budgetValue - (typeof spentValue === 'number' ? spentValue : 0)); lines.push(`Your ${category} budget is $${fmt(budgetValue)} per month.`); lines.push(`You've spent $${fmt(spentValue)} so far, leaving $${fmt(remaining)} this month.`); if (remaining <= budgetValue * 0.1) { lines.push(\"⚠️ You're almost at your limit — consider pausing this category.\"); } else if (remaining <= budgetValue * 0.25) { lines.push(\"Heads-up: you're getting close to the limit.\"); } } else { lines.push(`You haven't set a ${category} budget yet. Want me to set one now?`); } }; if (cat && cat !== 'overall' && cat !== 'total') { buildCategoryLine(cat); } else { const keys = Object.keys(budgets).filter(k => typeof budgets[k] === 'number' && isFinite(budgets[k])); if (keys.length) { lines.push('Here are your current monthly category budgets:'); keys.sort().forEach(k => { const budgetValue = budgets[k]; const spentValue = spending[k] || 0; const remaining = Math.max(0, (typeof budgetValue === 'number' ? budgetValue : 0) - (typeof spentValue === 'number' ? spentValue : 0)); lines.push(`${k}: $${fmt(budgetValue)} planned | $${fmt(spentValue)} spent | $${fmt(remaining)} left`); }); } else { lines.push(\"You haven't set any category budgets yet. Say \\\"set my grocery budget to $300\\\" to get started.\"); } if (typeof profile.total_budget === 'number' && isFinite(profile.total_budget)) { const spentTotal = Object.values(spending).reduce((sum, v) => sum + (typeof v === 'number' && isFinite(v) ? v : 0), 0); const remainingTotal = typeof profile.remaining_budget === 'number' && isFinite(profile.remaining_budget) ? profile.remaining_budget : Math.max(0, profile.total_budget - spentTotal); lines.push(`Overall budget: $${fmt(profile.total_budget)} planned | $${fmt(remainingTotal)} remaining.`); } } lines.push('Need to adjust any limits or add a new category? Just let me know.'); return lines.join('\\n'); })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        544
+      ],
+      "id": "c5865328-1228-4d32-a198-6c42ea194bad",
+      "name": "Compose Message - Budget1"
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "additionalParameters": {}
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        656
+      ],
+      "id": "7cf97c8c-85e4-4da7-b2ed-45e5649e4684",
+      "name": "Brave Search (Direct Response)1",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "vr0EyDuMtCwAFnz6",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Direct Response AI Assistant\n\nYou are a helpful AI assistant for Budget Guardian. Answer the user's query directly using web search when needed.\n\n**USER FINANCIAL PROFILE:**\n{{ $('Merge User Context1').item.json.user_context_summary || 'New user - no previous data.' }}\n\n**RECEIPT PROCESSING:**\n{{ (() => { const expenseData = $('Edit Fields1').item.json.expense_data; if (expenseData && expenseData.amount > 0) { const userProfile = $('Merge User Context1').item.json.user_profile; const category = expenseData.category || 'other'; const categoryBudgets = userProfile?.budget_limits || {}; const categoryBudget = categoryBudgets[category]; const categorySpending = (userProfile?.categories || {})[category] || 0; const newCategorySpending = categorySpending + expenseData.amount; let msg = `Receipt detected! $${expenseData.amount.toFixed(2)} spent at ${expenseData.merchant} (${expenseData.category})`; if (categoryBudget) { const remaining = Math.max(0, categoryBudget - newCategorySpending); msg += `. ${category} spending: $${newCategorySpending.toFixed(2)} / $${categoryBudget} (${remaining.toFixed(2)} left)`; if (remaining < categoryBudget * 0.1) { msg += ' ⚠️ Category budget almost depleted!'; } else if (remaining < categoryBudget * 0.3) { msg += ' ⚠️ Warning: approaching category limit!'; } } else { msg += `. No ${category} budget set - say \"set my ${category} budget to $X\" to track it.`; } return msg; } return ''; })() }}\n\nFor queries about budgets:\n- ALWAYS reference the user's Category Budgets from their profile above\n- When asked \"what is my X budget\" or \"my X budget\", check the Category Budgets section\n- Provide specific dollar amounts and current spending vs budget\n- If a category budget exists, mention how much they've spent and how much remains\n- Example: \"Your grocery budget is $450 per month. You've spent $107.60 so far, leaving $342.40.\"\n\nFor queries about finding products, prices, or locations:\n- Use Brave Search to find current information\n- Include specific store names and locations\n- Mention prices when available\n- Provide addresses or specific locations in the user's area\n- If the user mentions a city (like Waterloo, Kitchener, etc.), focus on that area\n- Consider their budget and spending patterns when recommending options\n\nFor financial questions:\n- Reference their known income, spending categories, and CATEGORY BUDGETS\n- Provide personalized advice based on their profile\n- If they share NEW financial info (income, spending amounts, budget limits), acknowledge it\n\nFor receipt uploads:\n- ALWAYS acknowledge the receipt with the expense amount and merchant\n- Show category budget impact if they have one set\n- If no category budget is set, encourage them to set one\n- Provide encouragement or warnings based on remaining budget\n\nFor general queries:\n- Provide helpful, concise answers\n- Use search when you need current information\n- Be friendly and conversational\n\nUser query: {{ $json.user_text || $('Edit Fields1').item.json.user_text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1408,
+        416
+      ],
+      "id": "0888bdd7-ede4-45e0-9d43-8d209d35bd38",
+      "name": "AI Agent - Direct Response1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5f6a7b8-c9d0-1234-ef01-345678901234",
+              "name": "output",
+              "value": "={{ (() => { const response = $json.output || $json.text || $json.response || ''; if (typeof response === 'string' && response.trim()) { return response; } return 'I found some information for you, but had trouble formatting it. Please try rephrasing your question.'; })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        304
+      ],
+      "id": "95a6e853-0e9b-44ba-add8-e8ea21ca42c9",
+      "name": "Compose Message - Direct1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Trigger1').first().json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        496
+      ],
+      "id": "061c4f24-6588-4444-b118-642b0717cef0",
+      "name": "Reply in Telegram (Direct)1",
+      "webhookId": "direct-response-webhook-id",
+      "credentials": {
+        "telegramApi": {
+          "id": "sl2XyaTKmEdfH4KK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-profile-001",
+              "name": "user_id",
+              "value": "={{ $('Merge User Context1').item.json.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-profile-002",
+              "name": "monthly_income",
+              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existing = $('Merge User Context1').item.json.user_profile?.monthly_income; const incomeMatch = text.match(/(?:income|earn|make|salary).*?\\$?([0-9,]+)/i); if (incomeMatch) { return parseFloat(incomeMatch[1].replace(/,/g, '')); } const perMonth = text.match(/\\$?([0-9,]+)\\s*(?:per month|monthly|a month)/i); if (perMonth) { return parseFloat(perMonth[1].replace(/,/g, '')); } return existing || null; })() }}",
+              "type": "number"
+            },
+            {
+              "id": "extract-profile-003",
+              "name": "categories",
+              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existing = $('Merge User Context1').item.json.user_profile?.categories || {}; const categories = { ...existing }; const expenseData = $('Edit Fields1').item.json.expense_data; if (expenseData && expenseData.amount > 0) { const cat = expenseData.category || 'other'; categories[cat] = (categories[cat] || 0) + expenseData.amount; } const patterns = [ { key: 'groceries', regex: /(?:groceries|food|supermarket).*?\\$?([0-9,]+)/i }, { key: 'gas', regex: /(?:gas|fuel|petrol).*?\\$?([0-9,]+)/i }, { key: 'dining', regex: /(?:dining|restaurant|eating out).*?\\$?([0-9,]+)/i }, { key: 'entertainment', regex: /(?:entertainment|movies|streaming).*?\\$?([0-9,]+)/i }, { key: 'utilities', regex: /(?:utilities|bills|electricity|water|internet).*?\\$?([0-9,]+)/i } ]; patterns.forEach(p => { const match = text.match(p.regex); if (match) { categories[p.key] = parseFloat(match[1].replace(/,/g, '')); } }); return categories; })() }}",
+              "type": "object"
+            },
+            {
+              "id": "extract-profile-004",
+              "name": "budget_limits",
+              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existing = $('Merge User Context1').item.json.user_profile?.budget_limits || {}; const limits = { ...existing }; const patterns = [ { key: 'groceries', regex: /(?:set|my)?\\s*(?:grocery|groceries|food)\\s*budget\\s*(?:to|is|at)?\\s*\\$?([0-9,]+)/i }, { key: 'gas', regex: /(?:set|my)?\\s*(?:gas|fuel)\\s*budget\\s*(?:to|is|at)?\\s*\\$?([0-9,]+)/i }, { key: 'dining', regex: /(?:set|my)?\\s*(?:dining|restaurant|eating out)\\s*budget\\s*(?:to|is|at)?\\s*\\$?([0-9,]+)/i }, { key: 'entertainment', regex: /(?:set|my)?\\s*(?:entertainment|fun|leisure)\\s*budget\\s*(?:to|is|at)?\\s*\\$?([0-9,]+)/i }, { key: 'utilities', regex: /(?:set|my)?\\s*(?:utilities|bills)\\s*budget\\s*(?:to|is|at)?\\s*\\$?([0-9,]+)/i } ]; patterns.forEach(p => { const match = text.match(p.regex); if (match) { limits[p.key] = parseFloat(match[1].replace(/,/g, '')); } }); return limits; })() }}",
+              "type": "object"
+            },
+            {
+              "id": "extract-profile-005",
+              "name": "spending_goals",
+              "value": "={{ $('Merge User Context1').item.json.user_profile?.spending_goals || [] }}",
+              "type": "json"
+            },
+            {
+              "id": "extract-profile-006",
+              "name": "total_conversations",
+              "value": "={{ ($('Merge User Context1').item.json.user_profile?.total_conversations || 0) + 1 }}",
+              "type": "number"
+            },
+            {
+              "id": "extract-profile-007",
+              "name": "last_updated",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-profile-008",
+              "name": "notes",
+              "value": "={{ (() => { const existing = $('Merge User Context1').item.json.user_profile?.notes || ''; const expenseData = $('Edit Fields1').item.json.expense_data; if (expenseData && expenseData.amount > 0) { const date = new Date(); const dateStr = date.toISOString().split('T')[0]; const newNote = `[${dateStr}] Receipt: $${expenseData.amount} at ${expenseData.merchant} (${expenseData.category})`; return existing ? existing + '\\n' + newNote : newNote; } return existing; })() }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-profile-009",
+              "name": "total_budget",
+              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existing = $('Merge User Context1').item.json.user_profile?.total_budget; const budgetMatch = text.match(/(?:set|overall|total)?\\s*(?:budget|limit).*?\\$?([0-9,]+)/i); if (budgetMatch) { return parseFloat(budgetMatch[1].replace(/,/g, '')); } return existing || null; })() }}",
+              "type": "number"
+            },
+            {
+              "id": "extract-profile-010",
+              "name": "remaining_budget",
+              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existingBudget = $('Merge User Context1').item.json.user_profile?.total_budget; const existingRemaining = $('Merge User Context1').item.json.user_profile?.remaining_budget; const expenseData = $('Edit Fields1').item.json.expense_data; const newBudgetMatch = text.match(/(?:set|overall|total)?\\s*(?:budget|limit).*?\\$?([0-9,]+)/i); if (newBudgetMatch) { const newBudget = parseFloat(newBudgetMatch[1].replace(/,/g, '')); return newBudget; } if (expenseData && expenseData.amount > 0) { if (existingRemaining !== null && existingRemaining !== undefined) { return Math.max(0, existingRemaining - expenseData.amount); } else if (existingBudget !== null && existingBudget !== undefined) { return Math.max(0, existingBudget - expenseData.amount); } } return existingRemaining !== null && existingRemaining !== undefined ? existingRemaining : (existingBudget !== null && existingBudget !== undefined ? existingBudget : null); })() }}",
+              "type": "number"
+            },
+            {
+              "id": "extract-profile-011",
+              "name": "budget_context",
+              "value": "={{ (() => { const profile = $('Merge User Context1').item.json.user_profile || {}; const budgets = profile.budget_limits || {}; const spending = profile.categories || {}; const context = { budgets, spending }; return context; })() }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2320,
+        304
+      ],
+      "id": "5e38f144-0600-4348-9407-eaa6b68a5caf",
+      "name": "Extract Profile Updates1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-user-exists-001",
+              "leftValue": "={{ $('Fetch User Profile1').item.json.user_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        480
+      ],
+      "id": "3e2344c6-1e6a-48b2-a7a3-5512dad6a2ed",
+      "name": "Check if User Exists1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "user_profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.user_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "monthly_income",
+              "fieldValue": "={{ $json.monthly_income }}"
+            },
+            {
+              "fieldId": "categories",
+              "fieldValue": "={{ $json.categories }}"
+            },
+            {
+              "fieldId": "budget_limits",
+              "fieldValue": "={{ $json.budget_limits }}"
+            },
+            {
+              "fieldId": "spending_goals",
+              "fieldValue": "={{ $json.spending_goals }}"
+            },
+            {
+              "fieldId": "total_conversations",
+              "fieldValue": "={{ $json.total_conversations }}"
+            },
+            {
+              "fieldId": "last_updated",
+              "fieldValue": "={{ $json.last_updated }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.notes }}"
+            },
+            {
+              "fieldId": "total_budget",
+              "fieldValue": "={{ $json.total_budget }}"
+            },
+            {
+              "fieldId": "remaining_budget",
+              "fieldValue": "={{ $json.remaining_budget }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        304
+      ],
+      "id": "4ba26c77-2b61-4b1a-a790-e7780a80fb3a",
+      "name": "Update User Profile1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "4lrtFcWMFMluvyaj",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "user_profiles",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id }}"
+            },
+            {
+              "fieldId": "monthly_income",
+              "fieldValue": "={{ $json.monthly_income }}"
+            },
+            {
+              "fieldId": "categories",
+              "fieldValue": "={{ $json.categories }}"
+            },
+            {
+              "fieldId": "budget_limits",
+              "fieldValue": "={{ $json.budget_limits }}"
+            },
+            {
+              "fieldId": "spending_goals",
+              "fieldValue": "={{ $json.spending_goals }}"
+            },
+            {
+              "fieldId": "total_conversations",
+              "fieldValue": "={{ $json.total_conversations }}"
+            },
+            {
+              "fieldId": "last_updated",
+              "fieldValue": "={{ $json.last_updated }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.notes }}"
+            },
+            {
+              "fieldId": "total_budget",
+              "fieldValue": "={{ $json.total_budget }}"
+            },
+            {
+              "fieldId": "remaining_budget",
+              "fieldValue": "={{ $json.remaining_budget }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        576
+      ],
+      "id": "09b198f1-b365-40f9-8265-42a27f09dc3b",
+      "name": "Create User Profile1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "4lrtFcWMFMluvyaj",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a31a1f3e-2a90-4a4e-8f0a-6b0b2b4f2c01",
+              "name": "runAnalyst",
+              "value": "={{ (() => { const toBool = (v) => { if (typeof v === 'boolean') return v; if (typeof v === 'string') { const s = v.trim().toLowerCase(); if (['true','1','yes','y'].includes(s)) return true; if (['false','0','no','n'].includes(s)) return false; } if (typeof v === 'number') return v !== 0; return false; }; const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields1').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const text = getText(); const t = text.toLowerCase(); const hints = ['price','prices','cheaper','cheap','cheapest','deal','deals','discount','discounts','coupon','coupons','promo','code','compare','comparison','student plan','student discount','bundle','bundles','where to buy','retailer','merchant','buy','purchase','cost','costs','renewal','subscription price','sale','sales','promo code','best deal','best price','cheapest place']; const hasPrice = hints.some(k => t.indexOf(k) !== -1); const plannerPrice = toBool($json.runPrice); const price = hasPrice || plannerPrice; return !price; })() }}",
+              "type": "boolean"
+            },
+            {
+              "id": "b52b8c2a-2c63-4f3a-94cc-0e56d7a7c1f2",
+              "name": "runPrice",
+              "value": "={{ (() => { const toBool = (v) => { if (typeof v === 'boolean') return v; if (typeof v === 'string') { const s = v.trim().toLowerCase(); if (['true','1','yes','y'].includes(s)) return true; if (['false','0','no','n'].includes(s)) return false; } if (typeof v === 'number') return v !== 0; return false; }; const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields1').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const t = getText().toLowerCase(); const hints = ['price','prices','cheaper','cheap','cheapest','deal','deals','discount','discounts','coupon','coupons','promo','code','compare','comparison','student plan','student discount','bundle','bundles','where to buy','retailer','merchant','buy','purchase','cost','costs','renewal','subscription price','sale','sales','promo code','best deal','best price','cheapest place']; const hasPrice = hints.some(k => t.indexOf(k) !== -1); const plannerPrice = toBool($json.runPrice); return hasPrice || plannerPrice; })() }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a28821b7-2b62-4cd2-8beb-b00b02d3d33d",
+              "name": "user_text",
+              "value": "={{ (() => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields1').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; })() }}",
+              "type": "string"
+            },
+            {
+              "id": "da2b7fb9-7b0d-4a81-9f55-fb0e5d7145bb",
+              "name": "price_queries",
+              "value": "={{ (() => { const toBool = (v) => { if (typeof v === 'boolean') return v; if (typeof v === 'string') { const s = v.trim().toLowerCase(); if (['true','1','yes','y'].includes(s)) return true; if (['false','0','no','n'].includes(s)) return false; } if (typeof v === 'number') return v !== 0; return false; }; const getText = () => { const current = $json.user_text; if (typeof current === 'string' && current.trim().length) return current; const fromEdit = $('Edit Fields1').item.json.user_text; return typeof fromEdit === 'string' ? fromEdit : ''; }; const rawText = getText(); const textLower = rawText.toLowerCase(); const hints = ['price','prices','cheaper','cheap','cheapest','deal','deals','discount','discounts','coupon','coupons','promo','code','compare','comparison','student plan','student discount','bundle','bundles','where to buy','retailer','merchant','buy','purchase','cost','costs','renewal','subscription price','sale','sales','promo code','best deal','best price','cheapest place']; const hasPrice = hints.some(k => textLower.indexOf(k) !== -1); const plannerPrice = toBool($json.runPrice); const shouldPrice = hasPrice || plannerPrice; const existing = Array.isArray($json.price_queries) ? $json.price_queries.filter(q => typeof q === 'string' && q.trim().length) : []; if (!shouldPrice) { return []; } if (existing.length) { return existing.slice(0,3); } const stop = new Set(['find','me','please','you','help','need','want','would','like','look','looking','for','a','an','the','cheap','cheaper','cheapest','price','prices','cost','costs','deal','deals','discount','discounts','where','to','buy','get','in','near','around','waterloo','ontario','canada']); const tokens = rawText.split(/[^a-zA-Z0-9]+/).map(t => t.trim()).filter(Boolean); const filtered = tokens.filter(t => { const lower = t.toLowerCase(); if (stop.has(lower)) return false; return /^[a-z0-9]+$/i.test(t); }); const productTokens = filtered.map(t => t.replace(/^[\"'`]+|[\"'`]+$/g, '')); const product = productTokens.length ? productTokens.join(' ') : (rawText.trim() || 'grocery item'); const location = (() => { if (textLower.includes('kitchener')) return 'Kitchener Ontario'; if (textLower.includes('cambridge')) return 'Cambridge Ontario'; if (textLower.includes('toronto')) return 'Toronto Ontario'; if (textLower.includes('guelph')) return 'Guelph Ontario'; return 'Waterloo Ontario'; })(); const base = product.trim(); const queries = []; const seen = new Set(); const pushQuery = (q) => { const key = q.toLowerCase(); if (!seen.has(key) && q.trim()) { seen.add(key); queries.push(q.trim()); } }; pushQuery('best price ' + base + ' ' + location); pushQuery('cheap ' + base + ' deals ' + location); pushQuery(base + ' discount ' + location); if (!queries.length) { pushQuery(base + ' price ' + location); } return queries.slice(0,3); })() }}",
+              "type": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        832
+      ],
+      "id": "cb788631-c44a-4ea3-9b52-2d0c8fc7191a",
+      "name": "Sub Agentic Task1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        752
+      ],
+      "id": "ebe1737b-51a9-41cd-9210-4fe012964765",
+      "name": "Groq Chat Model4",
+      "credentials": {
+        "groqApi": {
+          "id": "AFEhhW2jthXCot4t",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        544,
+        1136
+      ],
+      "id": "0528f4d2-04ef-454c-952b-e756ee5415f4",
+      "name": "Groq Chat Model5",
+      "credentials": {
+        "groqApi": {
+          "id": "AFEhhW2jthXCot4t",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        656
+      ],
+      "id": "05462eca-7c2f-430e-8e5f-356cf7a55229",
+      "name": "Groq Chat Model6",
+      "credentials": {
+        "groqApi": {
+          "id": "AFEhhW2jthXCot4t",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        432,
+        1664
+      ],
+      "id": "0b0050f8-9ec9-49c2-92e6-2c2b8c672e58",
+      "name": "Groq Chat Model7",
+      "credentials": {
+        "groqApi": {
+          "id": "AFEhhW2jthXCot4t",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2240,
+        544
+      ],
+      "id": "06809486-309c-46fd-bee2-6318eb6a7002",
+      "name": "Transcribe audio1",
+      "credentials": {
+        "openAiApi": {
+          "id": "n7FcR0fOh99ziM2b",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Check if Image": {
+      "main": [
+        [
+          {
+            "node": "Get Image File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image File": {
+      "main": [
+        [
+          {
+            "node": "Analyze Receipt with Vision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Receipt with Vision": {
+      "main": [
+        [
+          {
+            "node": "Format Expense Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Expense Data": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Message Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Check if Audio file1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check if Image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check if Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Audio file1": {
+      "main": [
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Text": {
+      "main": [
+        [
+          {
+            "node": "Set field1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set field1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Fetch User Profile1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory (Planner)1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Planner1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Planner1": {
+      "main": [
+        [
+          {
+            "node": "Detect Budget Query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If runAnalyst?1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Analyst1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If runPrice?1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Data Retrieval1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory (Analyst)1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Analyst1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Analyst1": {
+      "main": [
+        [
+          {
+            "node": "Compose Message - Analyst1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose Message - Analyst1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Direct Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search (Retrieval)1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent - Data Retrieval1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory (Retrieval)1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Data Retrieval1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser (Retrieval)1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent - Data Retrieval1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Data Retrieval1": {
+      "main": [
+        [
+          {
+            "node": "Compose Message - Price1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose Message - Price1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Direct Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent - Planner1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser (Analyst)1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent - Analyst1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch User Profile1": {
+      "main": [
+        [
+          {
+            "node": "Merge User Context1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge User Context1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Planner1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory (Direct Response)1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Direct Response1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Budget Query1": {
+      "main": [
+        [
+          {
+            "node": "If Budget Query?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Budget Query?1": {
+      "main": [
+        [
+          {
+            "node": "Compose Message - Budget1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sub Agentic Task1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search (Direct Response)1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent - Direct Response1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Direct Response1": {
+      "main": [
+        [
+          {
+            "node": "Compose Message - Direct1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose Message - Direct1": {
+      "main": [
+        [
+          {
+            "node": "Reply in Telegram (Direct)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply in Telegram (Direct)1": {
+      "main": [
+        [
+          {
+            "node": "Extract Profile Updates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Profile Updates1": {
+      "main": [
+        [
+          {
+            "node": "Check if User Exists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if User Exists1": {
+      "main": [
+        [
+          {
+            "node": "Update User Profile1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create User Profile1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sub Agentic Task1": {
+      "main": [
+        [
+          {
+            "node": "If runAnalyst?1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If runPrice?1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent - Direct Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Planner1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Analyst1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Direct Response1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Data Retrieval1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe audio1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "413509e3cb2730893b274ddf5c9e4497db5bb8d9e8033d511e51a211c7e12940"
+  }
+}

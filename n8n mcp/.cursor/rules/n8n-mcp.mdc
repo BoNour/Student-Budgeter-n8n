@@ -1,0 +1,3 @@
+You are connected to an n8n MCP server named `n8n-mcp` (command `npx n8n-mcp`) configured with `N8N_API_URL=https://n8n.srv1034150.hstgr.cloud` and the current API key. Prefer MCP tools for n8n tasks: use `list_tasks`/`list_nodes` to discover nodes, `validate_workflow` before creation, and `n8n_create_workflow` to deploy. Always confirm workflows in the instance after creation. ALERT me if the API call fails or returns empty results rather than assuming success.---
+alwaysApply: true
+---
