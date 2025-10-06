@@ -309,6 +309,62 @@
     },
     {
       "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-first-time-user-001",
+              "leftValue": "={{ $('Merge User Context1').item.json.user_profile.total_conversations }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "number",
+                "operation": "lte",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        512
+      ],
+      "id": "first-time-user-check-001",
+      "name": "Check if First Time User"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Trigger1').first().json.message.chat.id }}",
+        "text": "🎉 Welcome to Budget Guardian! \n\nI'm your personal finance assistant, here to help you manage your money smarter. Here's what I can do for you:\n\n💰 **Budget Tracking**\n• Set monthly budgets for different categories (groceries, dining, gas, etc.)\n• Track your spending and get alerts when you're close to limits\n• View your remaining budget anytime\n\n📸 **Receipt Scanning**\n• Take photos of receipts and I'll automatically extract the expense details\n• Categorize expenses and update your budget in real-time\n\n🎙️ **Voice Messages**\n• Send voice messages about your expenses - I'll transcribe and process them\n\n🔍 **Price Comparison**\n• Ask me to find the best deals on products you want to buy\n• Get student discounts and coupon codes\n• Compare prices across different stores\n\n📊 **Financial Analysis**\n• Get insights into your spending patterns\n• Receive personalized savings recommendations\n• Track your financial goals\n\n**Quick Start Tips:**\n• Say \"set my grocery budget to $300\" to create your first budget\n• Send a receipt photo to track an expense\n• Ask \"what's my budget?\" to see your current status\n• Try \"find cheap textbooks\" for price comparisons\n\nWhat would you like to do first? 🚀",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        320
+      ],
+      "id": "send-welcome-message-001",
+      "name": "Send Welcome Message",
+      "webhookId": "welcome-message-webhook-001",
+      "credentials": {
+        "telegramApi": {
+          "id": "sl2XyaTKmEdfH4KK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "sessionIdType": "customKey",
         "sessionKey": "={{ $('Telegram Message Trigger1').first().json.message.chat.id }}",
         "contextWindowLength": 10
@@ -1522,6 +1578,35 @@
       ]
     },
     "Merge User Context1": {
+      "main": [
+        [
+          {
+            "node": "Check if First Time User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if First Time User": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent - Planner1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Message": {
       "main": [
         [
           {
