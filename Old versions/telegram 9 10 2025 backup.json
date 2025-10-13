@@ -28,10 +28,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -7088,
-        -192
+        -7584,
+        656
       ],
-      "id": "ee0b143e-cd9f-4d03-9092-5a38e8af4939",
+      "id": "c608a233-1855-40df-ba14-2d954a257a5a",
       "name": "Check if Image"
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -6720,
-        -208
+        -7216,
+        640
       ],
-      "id": "dad1a369-3dd4-4b74-9b4a-661271f24ad9",
+      "id": "3f0b6d5d-4719-423b-af49-b336c87e1659",
       "name": "Get Image File",
       "webhookId": "get-image-webhook-001",
       "credentials": {
@@ -75,10 +75,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -6336,
-        -208
+        -6832,
+        640
       ],
-      "id": "e9f193cf-dd72-4023-b581-30ad4ed6f6e8",
+      "id": "bf591aa8-dba6-41de-9ccd-24870718474f",
       "name": "Analyze Receipt with Vision",
       "credentials": {
         "openAiApi": {
@@ -110,10 +110,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -5936,
-        -208
+        -6432,
+        640
       ],
-      "id": "86cfb617-2b3c-4496-b965-6f81e92d0c7b",
+      "id": "4f5ef855-753b-4b83-87a5-4f78f1c7ffc0",
       "name": "Format Expense Data"
     },
     {
@@ -125,13 +125,13 @@
           "download": false
         }
       },
-      "id": "d3d1141a-fe35-480f-b3ca-5606521a8a3b",
+      "id": "dde112da-e5d5-47b2-b4d9-7dbad558427f",
       "name": "Telegram Message Trigger1",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -7728,
-        -192
+        -8224,
+        656
       ],
       "webhookId": "61396260-c024-467a-a04e-d71e2ef4fc83",
       "credentials": {
@@ -169,10 +169,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -7024,
-        -624
+        -7520,
+        224
       ],
-      "id": "733af74d-5e7e-4e8f-b5fc-9b3015299502",
+      "id": "9232a916-0362-49e6-a3c6-782b270c4133",
       "name": "Check if Audio file1"
     },
     {
@@ -184,10 +184,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -6608,
-        -656
+        -7104,
+        192
       ],
-      "id": "d088fb54-765e-4b0c-bb8c-a77849c07d90",
+      "id": "baf9e964-483c-4709-a003-b38fd3f63a98",
       "name": "Get a file1",
       "webhookId": "a50f0104-6e43-4a08-90f5-3e1dc050e450",
       "credentials": {
@@ -225,10 +225,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -6992,
-        272
+        -7488,
+        1120
       ],
-      "id": "da132ec8-b6eb-4386-a925-b4fbcc519ec2",
+      "id": "22e2c018-1c4d-429a-86e1-d62339a4a937",
       "name": "Check if Text"
     },
     {
@@ -248,10 +248,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -6176,
-        256
+        -6672,
+        1104
       ],
-      "id": "1fa6ad00-518a-462d-9b50-11017b169ca0",
+      "id": "c9af043c-cdf4-4f5c-882a-96920acf1c23",
       "name": "Set field1"
     },
     {
@@ -301,10 +301,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -5456,
-        -208
+        -5952,
+        640
       ],
-      "id": "db3ec550-1a5e-424e-9d5e-04c72af56b73",
+      "id": "1bc7f507-23dd-43cc-a525-2d42760d6c7a",
       "name": "Edit Fields1"
     },
     {
@@ -335,10 +335,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -4768,
-        -720
+        -5264,
+        128
       ],
-      "id": "67236298-8bc2-40ad-9e7b-a7e7dffb6e07",
+      "id": "9c4fe614-f49a-41e8-9ac3-75208e800dcc",
       "name": "Check if First Time User"
     },
     {
@@ -350,10 +350,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -4304,
-        -976
+        -4800,
+        -128
       ],
-      "id": "e9dd9eba-e778-4760-bf6a-57573e342426",
+      "id": "cfe93b68-2e91-4d87-88c7-d2b2797271de",
       "name": "Send Welcome Message",
       "webhookId": "welcome-message-webhook-001",
       "credentials": {
@@ -372,10 +372,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -4224,
-        -432
+        -4720,
+        416
       ],
-      "id": "a060840e-fe14-41aa-a05f-a4e093ef9815",
+      "id": "828fb763-07eb-4c0d-8053-be7da003f2d2",
       "name": "Simple Memory (Planner)1"
     },
     {
@@ -390,10 +390,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -4320,
-        -656
+        -4816,
+        192
       ],
-      "id": "5a4218b2-767f-4183-b647-a4cf68435296",
+      "id": "757820ea-e1c1-4157-8f37-509cc36e0289",
       "name": "AI Agent - Planner1"
     },
     {
@@ -424,10 +424,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3232,
-        -144
+        -3728,
+        704
       ],
-      "id": "1f5f4f28-3f58-4407-bda2-74ba160ace8b",
+      "id": "2613eb41-376d-4541-a549-649a206ad384",
       "name": "If runAnalyst?1"
     },
     {
@@ -458,10 +458,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3200,
-        256
+        -3696,
+        1104
       ],
-      "id": "249f7d50-4003-4142-afac-aae99786e58d",
+      "id": "49b2c621-bb71-4b99-9317-0e53d7a75e64",
       "name": "If runPrice?1"
     },
     {
@@ -473,10 +473,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -2864,
-        -48
+        -3360,
+        800
       ],
-      "id": "e9e2fd55-5cbb-4d0d-a8bc-a9404f288eea",
+      "id": "a756f318-03e2-4f1c-a3ae-8d9d22300bf4",
       "name": "Simple Memory (Analyst)1"
     },
     {
@@ -489,10 +489,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -2912,
-        -240
+        -3408,
+        608
       ],
-      "id": "c1f87223-5f64-46fa-a535-dc05b211de26",
+      "id": "41cbe3d4-8513-4f6f-bfac-4e0c842e7385",
       "name": "AI Agent - Analyst1"
     },
     {
@@ -512,10 +512,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2528,
-        -224
+        -3024,
+        624
       ],
-      "id": "efcfb450-03e6-42f2-9cff-2793c9aa7723",
+      "id": "61afe7c9-662f-4356-ab52-b1b910e6431c",
       "name": "Compose Message - Analyst1"
     },
     {
@@ -526,10 +526,10 @@
       "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
       "typeVersion": 1,
       "position": [
-        -2752,
-        480
+        -3248,
+        1328
       ],
-      "id": "4c360010-78f3-4fc4-a835-7febc929f494",
+      "id": "dd757a03-c14c-4442-bbd5-79689d8e402a",
       "name": "Brave Search (Retrieval)1",
       "credentials": {
         "braveSearchApi": {
@@ -547,10 +547,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -2912,
-        496
+        -3408,
+        1344
       ],
-      "id": "953ce300-9e32-4044-b6e2-1adf8977ccbf",
+      "id": "11968ab5-e977-4d6a-9f1d-ffd5a3b7bc7e",
       "name": "Simple Memory (Retrieval)1"
     },
     {
@@ -561,10 +561,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -2592,
-        480
+        -3088,
+        1328
       ],
-      "id": "1519b70c-7252-4689-8b4a-fe79e9bb336c",
+      "id": "acf4e9e4-9d65-4e74-95f3-22b9e57f3d96",
       "name": "Structured Output Parser (Retrieval)1"
     },
     {
@@ -577,10 +577,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -2912,
-        240
+        -3408,
+        1088
       ],
-      "id": "b3510ea2-5f2e-4b88-8edb-f877c4162b61",
+      "id": "83387e86-1fe1-47f1-bc53-32358f05b983",
       "name": "AI Agent - Data Retrieval1"
     },
     {
@@ -600,10 +600,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2560,
-        272
+        -3056,
+        1120
       ],
-      "id": "d4f3a1a9-f2f7-4b19-841d-7126aa8f4761",
+      "id": "ca4acb44-d4f6-4768-896c-956b8becf3b4",
       "name": "Compose Message - Price1"
     },
     {
@@ -614,10 +614,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -4096,
-        -432
+        -4592,
+        416
       ],
-      "id": "a1dd26cd-e75d-452a-84ca-39031c570aaf",
+      "id": "a76ba85c-7a8c-4858-b3c7-a298a1e76b49",
       "name": "Structured Output Parser1"
     },
     {
@@ -628,10 +628,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -2752,
-        -48
+        -3248,
+        800
       ],
-      "id": "48229bfb-bbc5-4ec2-8cd7-8c8b71fbba4b",
+      "id": "3ac96ddf-58b8-4913-bfa6-1b1e9453c77f",
       "name": "Structured Output Parser (Analyst)1"
     },
     {
@@ -650,10 +650,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -5248,
-        -336
+        -5744,
+        512
       ],
-      "id": "7dc90622-6a3d-43be-8cfe-31e97ba016ef",
+      "id": "b3a353e1-e608-437c-945b-4891609fbec8",
       "name": "Fetch User Profile1",
       "alwaysOutputData": true,
       "credentials": {
@@ -695,13 +695,13 @@
             {
               "id": "user-context-merge-005",
               "name": "user_profile",
-              "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return { monthly_income: null, monthly_spending: {}, categories: { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: {}, spending_goals: [], last_updated: null, total_conversations: 0, total_budget: null, remaining_budget: null, ai_savings_total: 0, ai_savings_recommendations: [] }; } return { monthly_income: profile.monthly_income || null, monthly_spending: profile.monthly_spending || {}, categories: profile.categories || { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: profile.budget_limits || {}, spending_goals: profile.spending_goals || [], last_updated: profile.last_updated || null, total_conversations: (profile.total_conversations || 0) + 1, notes: profile.notes || '', total_budget: profile.total_budget || null, remaining_budget: profile.remaining_budget || null, ai_savings_total: profile.ai_savings_total || 0, ai_savings_recommendations: profile.ai_savings_recommendations || [] }; })() }}",
+              "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return { monthly_income: null, monthly_spending: {}, categories: { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: {}, spending_goals: [], last_updated: null, total_conversations: 0, total_budget: null, remaining_budget: null }; } return { monthly_income: profile.monthly_income || null, monthly_spending: profile.monthly_spending || {}, categories: profile.categories || { groceries: 0, gas: 0, dining: 0, entertainment: 0, utilities: 0, other: 0 }, budget_limits: profile.budget_limits || {}, spending_goals: profile.spending_goals || [], last_updated: profile.last_updated || null, total_conversations: (profile.total_conversations || 0) + 1, notes: profile.notes || '', total_budget: profile.total_budget || null, remaining_budget: profile.remaining_budget || null }; })() }}",
               "type": "object"
             },
             {
               "id": "user-context-merge-006",
               "name": "user_context_summary",
-              "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return 'New user - no previous data.'; } const parts = []; if (profile.total_budget) { parts.push(`Total Budget: $${profile.total_budget}${profile.remaining_budget !== null ? ` (Remaining: $${profile.remaining_budget.toFixed(2)})` : ''}`); } if (profile.monthly_income) { parts.push(`Monthly income: $${profile.monthly_income}`); } if (profile.ai_savings_total && profile.ai_savings_total > 0) { parts.push(`AI has helped save: $${profile.ai_savings_total.toFixed(2)} total`); } const limits = profile.budget_limits || {}; if (Object.keys(limits).length) { const limitStrs = []; for (const [cat, amt] of Object.entries(limits)) { if (amt) limitStrs.push(`${cat}: $${amt}`); } if (limitStrs.length) { parts.push(`Category Budgets: ${limitStrs.join(', ')}`); } } const cats = profile.categories || {}; const spending = []; if (cats.groceries) spending.push(`Groceries: $${cats.groceries}`); if (cats.gas) spending.push(`Gas: $${cats.gas}`); if (cats.dining) spending.push(`Dining: $${cats.dining}`); if (cats.entertainment) spending.push(`Entertainment: $${cats.entertainment}`); if (cats.utilities) spending.push(`Utilities: $${cats.utilities}`); if (cats.other) spending.push(`Other: $${cats.other}`); if (spending.length) { parts.push(`Current Month Spending - ${spending.join(', ')}`); } if (profile.spending_goals && profile.spending_goals.length) { parts.push(`Goals: ${profile.spending_goals.join('; ')}`); } if (profile.notes) { const recentNotes = profile.notes.split('\\n').slice(-3).join('; '); parts.push(`Recent: ${recentNotes}`); } return parts.length ? parts.join(' | ') : 'User exists but no financial data yet.'; })() }}",
+              "value": "={{ (() => { const profile = $json; if (!profile || !profile.user_id) { return 'New user - no previous data.'; } const parts = []; if (profile.total_budget) { parts.push(`Total Budget: $${profile.total_budget}${profile.remaining_budget !== null ? ` (Remaining: $${profile.remaining_budget.toFixed(2)})` : ''}`); } if (profile.monthly_income) { parts.push(`Monthly income: $${profile.monthly_income}`); } const limits = profile.budget_limits || {}; if (Object.keys(limits).length) { const limitStrs = []; for (const [cat, amt] of Object.entries(limits)) { if (amt) limitStrs.push(`${cat}: $${amt}`); } if (limitStrs.length) { parts.push(`Category Budgets: ${limitStrs.join(', ')}`); } } const cats = profile.categories || {}; const spending = []; if (cats.groceries) spending.push(`Groceries: $${cats.groceries}`); if (cats.gas) spending.push(`Gas: $${cats.gas}`); if (cats.dining) spending.push(`Dining: $${cats.dining}`); if (cats.entertainment) spending.push(`Entertainment: $${cats.entertainment}`); if (cats.utilities) spending.push(`Utilities: $${cats.utilities}`); if (cats.other) spending.push(`Other: $${cats.other}`); if (spending.length) { parts.push(`Current Month Spending - ${spending.join(', ')}`); } if (profile.spending_goals && profile.spending_goals.length) { parts.push(`Goals: ${profile.spending_goals.join('; ')}`); } if (profile.notes) { const recentNotes = profile.notes.split('\\n').slice(-3).join('; '); parts.push(`Recent: ${recentNotes}`); } return parts.length ? parts.join(' | ') : 'User exists but no financial data yet.'; })() }}",
               "type": "string"
             }
           ]
@@ -711,10 +711,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -5024,
-        -496
+        -5520,
+        352
       ],
-      "id": "eede5357-c39d-4aaa-88cc-e9ba96ac26b0",
+      "id": "e403967a-261c-4c1c-98a1-fd9b25e6a030",
       "name": "Merge User Context1"
     },
     {
@@ -726,10 +726,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -2000,
-        -528
+        -2496,
+        320
       ],
-      "id": "c0946681-6052-4e25-8e0b-26aa84c90031",
+      "id": "9ce2abb7-82ec-47ad-9dea-141d79121293",
       "name": "Simple Memory (Direct Response)1"
     },
     {
@@ -761,10 +761,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3936,
-        -608
+        -4432,
+        240
       ],
-      "id": "5db91c4d-730b-4159-804e-54663eea494d",
+      "id": "0f8f157a-afb0-4b81-9682-4be31aa0551d",
       "name": "Detect Budget Query1"
     },
     {
@@ -795,10 +795,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3632,
-        -688
+        -4128,
+        160
       ],
-      "id": "b6d8703e-b258-4289-b3b7-b1e8320b65e5",
+      "id": "b1c22dfe-5087-45a9-8664-593cd6a783d1",
       "name": "If Budget Query?1"
     },
     {
@@ -818,10 +818,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3408,
-        -832
+        -3904,
+        16
       ],
-      "id": "2c8feb63-b35a-4f09-bee5-5d60828135a3",
+      "id": "3f96080d-79af-433e-9cd2-8dd02cd8deb8",
       "name": "Compose Message - Budget1"
     },
     {
@@ -832,10 +832,10 @@
       "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
       "typeVersion": 1,
       "position": [
-        -1840,
-        -528
+        -2336,
+        320
       ],
-      "id": "22463800-3c1b-4ea9-9dd9-9c235a7ce172",
+      "id": "8d884f1d-67df-40f4-aa59-df1438707411",
       "name": "Brave Search (Direct Response)1",
       "credentials": {
         "braveSearchApi": {
@@ -847,16 +847,16 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Direct Response AI Assistant\n\nYou are a helpful AI assistant for Budget Guardian. Keep responses SHORT and TO-THE-POINT (3-5 sentences max). Answer the user's query directly using web search when needed.\n\n**RESPONSE STYLE:**\n- Be concise and direct - NO long explanations or tables\n- Use bullet points ONLY when listing 3-4 items max\n- Skip introductions and filler text\n- Get straight to the answer\n- One follow-up question max\n\n**USER FINANCIAL PROFILE:**\n{{ $('Merge User Context1').item.json.user_context_summary || 'New user - no previous data.' }}\n\n**DETAILED USER DATA:**\n{{ (() => { const profile = $('Merge User Context1').item.json.user_profile || {}; const budgets = profile.budget_limits || {}; const spending = profile.categories || {}; const income = profile.monthly_income; const totalBudget = profile.total_budget; const remaining = profile.remaining_budget; const aiSavings = profile.ai_savings_total || 0; let details = []; if (income) details.push(`Income: $${income}/month`); if (totalBudget) details.push(`Total Budget: $${totalBudget} (Remaining: $${remaining || 0})`); if (aiSavings > 0) details.push(`AI Savings: $${aiSavings.toFixed(2)} total saved through recommendations`); Object.keys(spending).forEach(cat => { const spent = spending[cat] || 0; const budget = budgets[cat]; if (spent > 0 || budget) { details.push(`${cat}: spent $${spent}${budget ? ` / budget $${budget}` : ''}`); } }); return details.length ? details.join(' | ') : 'No spending data yet'; })() }}\n\n**RECEIPT PROCESSING:**\n{{ (() => { const expenseData = $('Edit Fields1').item.json.expense_data; if (expenseData && expenseData.amount > 0) { const userProfile = $('Merge User Context1').item.json.user_profile; const category = expenseData.category || 'other'; const categoryBudgets = userProfile?.budget_limits || {}; const categoryBudget = categoryBudgets[category]; const categorySpending = (userProfile?.categories || {})[category] || 0; const newCategorySpending = categorySpending + expenseData.amount; let msg = `Receipt detected! $${expenseData.amount.toFixed(2)} spent at ${expenseData.merchant} (${expenseData.category})`; if (categoryBudget) { const remaining = Math.max(0, categoryBudget - newCategorySpending); msg += `. ${category} spending: $${newCategorySpending.toFixed(2)} / $${categoryBudget} (${remaining.toFixed(2)} left)`; if (remaining < categoryBudget * 0.1) { msg += ' ⚠️ Category budget almost depleted!'; } else if (remaining < categoryBudget * 0.3) { msg += ' ⚠️ Warning: approaching category limit!'; } } else { msg += `. No ${category} budget set - say \"set my ${category} budget to $X\" to track it.`; } return msg; } return ''; })() }}\n\n**CRITICAL: PERSONALIZATION & SAVINGS TRACKING**\n- ALWAYS analyze the user's ACTUAL spending data above\n- For savings questions: identify their HIGHEST spending categories and give specific advice\n- Use REAL dollar amounts from their profile\n- Compare their spending to their budgets\n- Point out categories where they're overspending\n- PROACTIVELY suggest savings when you see overspending (even if not asked)\n- When suggesting savings, mention specific dollar amounts (e.g., \"save $150/month\")\n- Remind users of their total AI savings when relevant\n- Example: \"You've spent $450 on dining (no budget set). Cut that to $300/month and save $150. So far, I've helped you save $${aiSavings} total!\"\n\nFor queries about budgets:\n- Give SHORT, direct answers (2-3 sentences)\n- List only the MOST relevant 3-4 categories\n- Provide specific dollar amounts when available\n- Example: \"You can set budgets for: groceries, dining, gas, entertainment. Just say 'set my grocery budget to $300'.\"\n\nFor queries about saving money or reducing spending:\n- ANALYZE their actual spending data from DETAILED USER DATA above\n- Identify the TOP 2-3 categories where they spend the most\n- Give SPECIFIC dollar amounts and savings targets based on THEIR data\n- Example: \"Based on your spending: You spent $450 on dining and $200 on entertainment. Try cutting dining to $300 (save $150) and entertainment to $100 (save $100). That's $250/month saved.\"\n- If they have no spending data, ask them to share recent expenses first\n\nFor queries about finding products, prices, or locations:\n- Use Brave Search to find current information\n- List 2-3 best options only\n- Include prices and store names\n- Keep it brief\n\nFor financial questions:\n- Reference their ACTUAL spending numbers from profile\n- Give concise, actionable advice based on THEIR data (2-3 sentences)\n- Use specific dollar amounts from their profile\n- Skip lengthy explanations\n\nFor receipt uploads:\n- Acknowledge receipt briefly\n- Show budget impact if available\n- One sentence max\n\nFor general queries:\n- Answer in 2-4 sentences\n- Be friendly but brief\n- Use search only when needed\n\nUser query: {{ $json.user_text || $('Edit Fields1').item.json.user_text }}",
+        "text": "=Direct Response AI Assistant\n\nYou are a helpful AI assistant for Budget Guardian. Answer the user's query directly using web search when needed.\n\n**USER FINANCIAL PROFILE:**\n{{ $('Merge User Context1').item.json.user_context_summary || 'New user - no previous data.' }}\n\n**RECEIPT PROCESSING:**\n{{ (() => { const expenseData = $('Edit Fields1').item.json.expense_data; if (expenseData && expenseData.amount > 0) { const userProfile = $('Merge User Context1').item.json.user_profile; const category = expenseData.category || 'other'; const categoryBudgets = userProfile?.budget_limits || {}; const categoryBudget = categoryBudgets[category]; const categorySpending = (userProfile?.categories || {})[category] || 0; const newCategorySpending = categorySpending + expenseData.amount; let msg = `Receipt detected! $${expenseData.amount.toFixed(2)} spent at ${expenseData.merchant} (${expenseData.category})`; if (categoryBudget) { const remaining = Math.max(0, categoryBudget - newCategorySpending); msg += `. ${category} spending: $${newCategorySpending.toFixed(2)} / $${categoryBudget} (${remaining.toFixed(2)} left)`; if (remaining < categoryBudget * 0.1) { msg += ' ⚠️ Category budget almost depleted!'; } else if (remaining < categoryBudget * 0.3) { msg += ' ⚠️ Warning: approaching category limit!'; } } else { msg += `. No ${category} budget set - say \"set my ${category} budget to $X\" to track it.`; } return msg; } return ''; })() }}\n\nFor queries about budgets:\n- ALWAYS reference the user's Category Budgets from their profile above\n- When asked \"what is my X budget\" or \"my X budget\", check the Category Budgets section\n- Provide specific dollar amounts and current spending vs budget\n- If a category budget exists, mention how much they've spent and how much remains\n- Example: \"Your grocery budget is $450 per month. You've spent $107.60 so far, leaving $342.40.\"\n\nFor queries about finding products, prices, or locations:\n- Use Brave Search to find current information\n- Include specific store names and locations\n- Mention prices when available\n- Provide addresses or specific locations in the user's area\n- If the user mentions a city (like Waterloo, Kitchener, etc.), focus on that area\n- Consider their budget and spending patterns when recommending options\n\nFor financial questions:\n- Reference their known income, spending categories, and CATEGORY BUDGETS\n- Provide personalized advice based on their profile\n- If they share NEW financial info (income, spending amounts, budget limits), acknowledge it\n\nFor receipt uploads:\n- ALWAYS acknowledge the receipt with the expense amount and merchant\n- Show category budget impact if they have one set\n- If no category budget is set, encourage them to set one\n- Provide encouragement or warnings based on remaining budget\n\nFor general queries:\n- Provide helpful, concise answers\n- Use search when you need current information\n- Be friendly and conversational\n\nUser query: {{ $json.user_text || $('Edit Fields1').item.json.user_text }}",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -2096,
-        -768
+        -2592,
+        80
       ],
-      "id": "c47e69d4-2cfc-4f12-a7be-bf18670468e8",
+      "id": "1ea26b19-e015-4b85-9c58-1add0c50a6b0",
       "name": "AI Agent - Direct Response1"
     },
     {
@@ -876,10 +876,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1664,
-        -880
+        -2160,
+        -32
       ],
-      "id": "0700abae-b8e7-423f-9165-05b5647e1d20",
+      "id": "005110d7-fb3f-439d-bfea-dd48190ab4b2",
       "name": "Compose Message - Direct1"
     },
     {
@@ -891,10 +891,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1344,
-        -816
+        -1840,
+        32
       ],
-      "id": "c7abe69d-9fcf-4be2-b025-901d9941d555",
+      "id": "13a4a7ab-6f38-41f5-a1a2-6f32567d0654",
       "name": "Reply in Telegram (Direct)1",
       "webhookId": "direct-response-webhook-id",
       "credentials": {
@@ -959,13 +959,13 @@
             {
               "id": "extract-profile-009",
               "name": "total_budget",
-              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existing = $('Merge User Context1').item.json.user_profile?.total_budget; if (text.includes('dining') || text.includes('groceries') || text.includes('gas') || text.includes('entertainment') || text.includes('utilities') || text.includes('reduce') || text.includes('cut') || text.includes('lower') || text.includes('decrease')) { return existing || null; } const budgetMatch = text.match(/(?:set|my)?\\s*(?:overall|total|monthly)?\\s*budget\\s*(?:to|is|at)?\\s*\\$?([0-9,]+)/i); if (budgetMatch) { return parseFloat(budgetMatch[1].replace(/,/g, '')); } return existing || null; })() }}",
+              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existing = $('Merge User Context1').item.json.user_profile?.total_budget; const budgetMatch = text.match(/(?:set|overall|total)?\\s*(?:budget|limit).*?\\$?([0-9,]+)/i); if (budgetMatch) { return parseFloat(budgetMatch[1].replace(/,/g, '')); } return existing || null; })() }}",
               "type": "number"
             },
             {
               "id": "extract-profile-010",
               "name": "remaining_budget",
-              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existingBudget = $('Merge User Context1').item.json.user_profile?.total_budget; const existingRemaining = $('Merge User Context1').item.json.user_profile?.remaining_budget; const expenseData = $('Edit Fields1').item.json.expense_data; if (text.includes('dining') || text.includes('groceries') || text.includes('gas') || text.includes('entertainment') || text.includes('utilities')) { if (expenseData && expenseData.amount > 0) { if (existingRemaining !== null && existingRemaining !== undefined) { return Math.max(0, existingRemaining - expenseData.amount); } else if (existingBudget !== null && existingBudget !== undefined) { return Math.max(0, existingBudget - expenseData.amount); } } return existingRemaining !== null && existingRemaining !== undefined ? existingRemaining : (existingBudget !== null && existingBudget !== undefined ? existingBudget : null); } const newBudgetMatch = text.match(/(?:set|my)?\\s*(?:overall|total|monthly)?\\s*budget\\s*(?:to|is)?\\s*\\$?([0-9,]+)/i); if (newBudgetMatch && !text.includes('reduce') && !text.includes('cut') && !text.includes('lower') && !text.includes('decrease')) { const newBudget = parseFloat(newBudgetMatch[1].replace(/,/g, '')); return newBudget; } if (expenseData && expenseData.amount > 0) { if (existingRemaining !== null && existingRemaining !== undefined) { return Math.max(0, existingRemaining - expenseData.amount); } else if (existingBudget !== null && existingBudget !== undefined) { return Math.max(0, existingBudget - expenseData.amount); } } return existingRemaining !== null && existingRemaining !== undefined ? existingRemaining : (existingBudget !== null && existingBudget !== undefined ? existingBudget : null); })() }}",
+              "value": "={{ (() => { const getSourceText = () => { const userText = $('Edit Fields1').item.json.user_text; if (typeof userText === 'string' && userText.trim()) { return userText; } const directText = $json.user_text; if (typeof directText === 'string' && directText.trim()) { return directText; } const outputText = $json.output; if (typeof outputText === 'string' && outputText.trim()) { return outputText; } return ''; }; const text = getSourceText().toLowerCase(); const existingBudget = $('Merge User Context1').item.json.user_profile?.total_budget; const existingRemaining = $('Merge User Context1').item.json.user_profile?.remaining_budget; const expenseData = $('Edit Fields1').item.json.expense_data; const newBudgetMatch = text.match(/(?:set|overall|total)?\\s*(?:budget|limit).*?\\$?([0-9,]+)/i); if (newBudgetMatch) { const newBudget = parseFloat(newBudgetMatch[1].replace(/,/g, '')); return newBudget; } if (expenseData && expenseData.amount > 0) { if (existingRemaining !== null && existingRemaining !== undefined) { return Math.max(0, existingRemaining - expenseData.amount); } else if (existingBudget !== null && existingBudget !== undefined) { return Math.max(0, existingBudget - expenseData.amount); } } return existingRemaining !== null && existingRemaining !== undefined ? existingRemaining : (existingBudget !== null && existingBudget !== undefined ? existingBudget : null); })() }}",
               "type": "number"
             },
             {
@@ -973,18 +973,6 @@
               "name": "budget_context",
               "value": "={{ (() => { const profile = $('Merge User Context1').item.json.user_profile || {}; const budgets = profile.budget_limits || {}; const spending = profile.categories || {}; const context = { budgets, spending }; return context; })() }}",
               "type": "object"
-            },
-            {
-              "id": "extract-profile-012",
-              "name": "ai_savings_total",
-              "value": "={{ (() => { const userText = $('Edit Fields1').item.json.user_text || ''; const aiOutput = $json.output || ''; const existing = $('Merge User Context1').item.json.user_profile?.ai_savings_total || 0; if (userText.toLowerCase().includes('reduce') || userText.toLowerCase().includes('set') || userText.toLowerCase().includes('change')) { return existing; } const text = aiOutput.toLowerCase(); if (!text || text.length < 10) { return existing; } const savingsMatch = text.match(/(?:save|saving|saved)\\s*\\$?([0-9,]+(?:\\.[0-9]{2})?)/i); if (savingsMatch) { const newSavings = parseFloat(savingsMatch[1].replace(/,/g, '')); if (newSavings > 0 && newSavings < 10000 && text.includes('month')) { return existing + newSavings; } } const cutMatch = text.match(/(?:cut|cutting)\\s+(?:dining|groceries|gas|entertainment|utilities|spending)\\s+to\\s+\\$?([0-9,]+)/i); if (cutMatch) { const targetAmount = parseFloat(cutMatch[1].replace(/,/g, '')); const currentMatch = text.match(/spent\\s+\\$?([0-9,]+)/i); if (currentMatch) { const currentAmount = parseFloat(currentMatch[1].replace(/,/g, '')); const savings = currentAmount - targetAmount; if (savings > 0 && savings < 10000) { return existing + savings; } } } return existing; })() }}",
-              "type": "number"
-            },
-            {
-              "id": "extract-profile-013",
-              "name": "ai_savings_recommendations",
-              "value": "={{ (() => { const userText = $('Edit Fields1').item.json.user_text || ''; const aiOutput = $json.output || ''; const existing = $('Merge User Context1').item.json.user_profile?.ai_savings_recommendations || []; if (userText.toLowerCase().includes('reduce') || userText.toLowerCase().includes('set') || userText.toLowerCase().includes('change')) { return existing; } const text = aiOutput; if (!text || text.length < 10) { return existing; } const recommendations = [...existing]; const savingsMatch = text.match(/(?:save|saving)\\s*\\$?([0-9,]+(?:\\.[0-9]{2})?)/i); if (savingsMatch) { const amount = parseFloat(savingsMatch[1].replace(/,/g, '')); if (amount > 0 && amount < 10000) { const date = new Date().toISOString().split('T')[0]; const categoryMatch = text.match(/(?:on|in|for|cut|cutting)\\s+(groceries|dining|gas|entertainment|utilities|other)/i); const category = categoryMatch ? categoryMatch[1].toLowerCase() : 'general'; recommendations.push({ date, category, amount, recommendation: text.slice(0, 150) }); } } return recommendations.slice(-10); })() }}",
-              "type": "json"
             }
           ]
         },
@@ -993,10 +981,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -896,
-        -800
+        -1392,
+        48
       ],
-      "id": "79692a30-7e52-4247-a3b5-4902089faad9",
+      "id": "82594c8e-9705-4056-b2e5-a0e8018cde78",
       "name": "Extract Profile Updates1"
     },
     {
@@ -1027,10 +1015,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -672,
-        -752
+        -1168,
+        96
       ],
-      "id": "9101c2fd-cadf-4101-9a0b-85b290cac4a8",
+      "id": "63ee9efc-37d8-40b5-a79b-a05401a2dcf9",
       "name": "Check if User Exists1"
     },
     {
@@ -1084,14 +1072,6 @@
             {
               "fieldId": "remaining_budget",
               "fieldValue": "={{ $json.remaining_budget }}"
-            },
-            {
-              "fieldId": "ai_savings_total",
-              "fieldValue": "={{ $json.ai_savings_total }}"
-            },
-            {
-              "fieldId": "ai_savings_recommendations",
-              "fieldValue": "={{ $json.ai_savings_recommendations }}"
             }
           ]
         }
@@ -1099,10 +1079,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -368,
-        -928
+        -864,
+        -80
       ],
-      "id": "7891b2a1-3818-4614-99aa-20d965d222da",
+      "id": "2c29d2a3-bdc6-4b1f-8cb5-6161fcb7dac5",
       "name": "Update User Profile1",
       "credentials": {
         "supabaseApi": {
@@ -1155,14 +1135,6 @@
             {
               "fieldId": "remaining_budget",
               "fieldValue": "={{ $json.remaining_budget }}"
-            },
-            {
-              "fieldId": "ai_savings_total",
-              "fieldValue": "={{ $json.ai_savings_total }}"
-            },
-            {
-              "fieldId": "ai_savings_recommendations",
-              "fieldValue": "={{ $json.ai_savings_recommendations }}"
             }
           ]
         }
@@ -1170,10 +1142,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -368,
-        -656
+        -864,
+        192
       ],
-      "id": "1b41e834-b4e6-4358-890d-6099ff01b505",
+      "id": "d501acf2-c680-48c2-8f64-26b0656a3fb0",
       "name": "Create User Profile1",
       "credentials": {
         "supabaseApi": {
@@ -1217,10 +1189,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3712,
-        -288
+        -4208,
+        560
       ],
-      "id": "21e71d96-4c6f-4329-8f09-d1b25a886fcf",
+      "id": "87cbe35d-b798-4e12-88fe-5985275e711a",
       "name": "Sub Agentic Task1"
     },
     {
@@ -1231,10 +1203,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -4368,
-        -432
+        -4864,
+        416
       ],
-      "id": "7e5d53e2-7770-49e5-9011-fbcfba6c0021",
+      "id": "e51700f1-a30f-40be-a874-d12e4b733b43",
       "name": "Groq Chat Model4",
       "credentials": {
         "groqApi": {
@@ -1251,10 +1223,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -2976,
-        -48
+        -3472,
+        800
       ],
-      "id": "390082de-cce8-4f03-bb69-2409a1b2dff5",
+      "id": "1fedea92-2ba4-4492-a515-77e1f3a46684",
       "name": "Groq Chat Model5",
       "credentials": {
         "groqApi": {
@@ -1271,10 +1243,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -2160,
-        -528
+        -2656,
+        320
       ],
-      "id": "7d63c5cb-068d-4211-9381-008e78633cb6",
+      "id": "497cf65f-60ba-4528-951e-dcd4cc652872",
       "name": "Groq Chat Model6",
       "credentials": {
         "groqApi": {
@@ -1291,10 +1263,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -3072,
-        480
+        -3568,
+        1328
       ],
-      "id": "0b54797e-5681-41b0-a493-0ede13ac2675",
+      "id": "139ce83c-5792-4529-b808-30f0d95bbb6d",
       "name": "Groq Chat Model7",
       "credentials": {
         "groqApi": {
@@ -1319,10 +1291,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -2272,
-        256
+        -2768,
+        1104
       ],
-      "id": "89226fae-e994-431f-8e97-0d164e428c32",
+      "id": "8b7d7aae-c5e8-4fb6-94ef-1291c2f79618",
       "name": "Fetch User Data for Email",
       "alwaysOutputData": true,
       "credentials": {
@@ -1356,10 +1328,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2064,
-        112
+        -2560,
+        960
       ],
-      "id": "e0441f97-ebf9-4bc8-8b78-5e6f304b744b",
+      "id": "72b997d2-eb07-425b-9326-ed60aecf036f",
       "name": "Format Email Content"
     },
     {
@@ -1372,10 +1344,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -1840,
-        0
+        -2336,
+        848
       ],
-      "id": "d141c8ce-bc78-428a-91cf-d7a5018175f6",
+      "id": "6c3b8ce6-eb0d-427f-8c3b-53283677169c",
       "name": "Send Data Email",
       "webhookId": "5edd6ac6-ef7f-46c8-b714-ec7ca38fd0d9",
       "credentials": {
@@ -1394,10 +1366,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1632,
-        -176
+        -2128,
+        672
       ],
-      "id": "2f9ecf05-dfc9-4fbb-b90a-54a0410ab884",
+      "id": "064b3557-92d0-4bc3-b490-fc2e775a2669",
       "name": "Confirm Email Sent",
       "webhookId": "confirm-email-webhook-001",
       "credentials": {
@@ -1416,10 +1388,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -6176,
-        -640
+        -6672,
+        208
       ],
-      "id": "f5f07b38-9145-41b0-a2c2-e6dace7eeffa",
+      "id": "3cd5622c-0770-4364-b2cb-0282a5f1bd70",
       "name": "Transcribe audio1",
       "credentials": {
         "openAiApi": {
@@ -1456,10 +1428,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1088,
-        -992
+        -1584,
+        -144
       ],
-      "id": "c21315fa-fd83-4787-b32f-23c634ad4fea",
+      "id": "c958ca31-1a1b-4eed-8565-b40f7083c0db",
       "name": "Check if Should Email Response"
     },
     {
@@ -1485,10 +1457,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -832,
-        -1152
+        -1328,
+        -304
       ],
-      "id": "e025a8b7-fd24-48cb-ba1a-41a8c78e6cd3",
+      "id": "f024b3e2-8ab3-476e-a4ce-2fe1629c37b8",
       "name": "Capture Email Data"
     },
     {
@@ -1503,10 +1475,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -560,
-        -1056
+        -1024,
+        -480
       ],
-      "id": "f990ad46-98a4-4ee3-8757-7117b1dbdcad",
+      "id": "5b5c3f5b-9e6e-46ab-95a8-9ec44fa70543",
       "name": "Send AI Response Email",
       "webhookId": "7a206559-3d19-4b5c-9e07-ef0adf3a40ac",
       "credentials": {
