@@ -28,10 +28,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -7088,
-        -192
+        -7520,
+        -416
       ],
-      "id": "ee0b143e-cd9f-4d03-9092-5a38e8af4939",
+      "id": "420ae37e-d69d-4a44-9e58-075f8b1f7a20",
       "name": "Check if Image"
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -6720,
-        -208
+        -7152,
+        -432
       ],
-      "id": "dad1a369-3dd4-4b74-9b4a-661271f24ad9",
+      "id": "6fe6e96c-c28a-4a36-a513-3f68fc7542b7",
       "name": "Get Image File",
       "webhookId": "get-image-webhook-001",
       "credentials": {
@@ -75,10 +75,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -6336,
-        -208
+        -6768,
+        -432
       ],
-      "id": "e9f193cf-dd72-4023-b581-30ad4ed6f6e8",
+      "id": "0d0b421a-1845-4574-bdcd-5f204aed01b6",
       "name": "Analyze Receipt with Vision",
       "credentials": {
         "openAiApi": {
@@ -110,10 +110,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -5936,
-        -208
+        -6368,
+        -432
       ],
-      "id": "86cfb617-2b3c-4496-b965-6f81e92d0c7b",
+      "id": "033819d8-39cc-45f8-ae93-70c62a3b34d5",
       "name": "Format Expense Data"
     },
     {
@@ -125,13 +125,13 @@
           "download": false
         }
       },
-      "id": "d3d1141a-fe35-480f-b3ca-5606521a8a3b",
+      "id": "e98510d6-aacd-438e-bb32-2e4574c25538",
       "name": "Telegram Message Trigger1",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -7728,
-        -192
+        -8000,
+        -416
       ],
       "webhookId": "61396260-c024-467a-a04e-d71e2ef4fc83",
       "credentials": {
@@ -169,10 +169,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -7024,
-        -624
+        -7648,
+        -688
       ],
-      "id": "733af74d-5e7e-4e8f-b5fc-9b3015299502",
+      "id": "a2295165-4a03-4a12-b55e-ffbfad2f69be",
       "name": "Check if Audio file1"
     },
     {
@@ -184,10 +184,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -6608,
-        -656
+        -7232,
+        -720
       ],
-      "id": "d088fb54-765e-4b0c-bb8c-a77849c07d90",
+      "id": "c9fc072e-3942-4d5a-9e8a-7dd7015e4c4e",
       "name": "Get a file1",
       "webhookId": "a50f0104-6e43-4a08-90f5-3e1dc050e450",
       "credentials": {
@@ -225,10 +225,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -6992,
-        272
+        -7552,
+        -112
       ],
-      "id": "da132ec8-b6eb-4386-a925-b4fbcc519ec2",
+      "id": "22c30736-546e-4dd6-bd73-fdfc4cc7afd8",
       "name": "Check if Text"
     },
     {
@@ -248,10 +248,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -6176,
-        256
+        -6736,
+        -128
       ],
-      "id": "1fa6ad00-518a-462d-9b50-11017b169ca0",
+      "id": "7ae5af4d-1071-4bf3-9e1a-be8f3872832f",
       "name": "Set field1"
     },
     {
@@ -301,10 +301,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -5456,
-        -208
+        -6128,
+        -432
       ],
-      "id": "db3ec550-1a5e-424e-9d5e-04c72af56b73",
+      "id": "163d83a2-1d86-4b23-9977-d1aefbce2275",
       "name": "Edit Fields1"
     },
     {
@@ -335,10 +335,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -4768,
-        -720
+        -5312,
+        -560
       ],
-      "id": "67236298-8bc2-40ad-9e7b-a7e7dffb6e07",
+      "id": "9bedd461-e1e6-4bd4-9880-1f553fd102c9",
       "name": "Check if First Time User"
     },
     {
@@ -350,10 +350,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -4304,
-        -976
+        -4960,
+        -720
       ],
-      "id": "e9dd9eba-e778-4760-bf6a-57573e342426",
+      "id": "a8851ccf-a33a-4827-8196-935f55d877f7",
       "name": "Send Welcome Message",
       "webhookId": "welcome-message-webhook-001",
       "credentials": {
@@ -372,10 +372,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -4224,
-        -432
+        -4880,
+        -160
       ],
-      "id": "a060840e-fe14-41aa-a05f-a4e093ef9815",
+      "id": "7cc5294a-fb7b-4dfd-84a0-30cfe334c864",
       "name": "Simple Memory (Planner)1"
     },
     {
@@ -390,10 +390,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -4320,
-        -656
+        -4976,
+        -384
       ],
-      "id": "5a4218b2-767f-4183-b647-a4cf68435296",
+      "id": "618f9e13-67a4-4e21-a739-b4bde5a3c0c8",
       "name": "AI Agent - Planner1"
     },
     {
@@ -424,10 +424,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3232,
-        -144
+        -6688,
+        384
       ],
-      "id": "1f5f4f28-3f58-4407-bda2-74ba160ace8b",
+      "id": "29c5de76-e30e-4d85-aabc-056b038457d5",
       "name": "If runAnalyst?1"
     },
     {
@@ -458,10 +458,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3200,
-        256
+        -6656,
+        784
       ],
-      "id": "249f7d50-4003-4142-afac-aae99786e58d",
+      "id": "698f7022-dfe0-4af1-9548-1637248ba191",
       "name": "If runPrice?1"
     },
     {
@@ -473,10 +473,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -2864,
-        -48
+        -6320,
+        480
       ],
-      "id": "e9e2fd55-5cbb-4d0d-a8bc-a9404f288eea",
+      "id": "5661fa29-4581-407a-bb81-ec34b5357e04",
       "name": "Simple Memory (Analyst)1"
     },
     {
@@ -489,10 +489,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -2912,
-        -240
+        -6368,
+        288
       ],
-      "id": "c1f87223-5f64-46fa-a535-dc05b211de26",
+      "id": "df5d56d1-4c5e-4648-b760-77a4f7ae6676",
       "name": "AI Agent - Analyst1"
     },
     {
@@ -512,10 +512,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2528,
-        -224
+        -5984,
+        304
       ],
-      "id": "efcfb450-03e6-42f2-9cff-2793c9aa7723",
+      "id": "897aa3ab-0e4d-4400-88ba-6dcb09c2df87",
       "name": "Compose Message - Analyst1"
     },
     {
@@ -526,10 +526,10 @@
       "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
       "typeVersion": 1,
       "position": [
-        -2752,
-        480
+        -6208,
+        1008
       ],
-      "id": "4c360010-78f3-4fc4-a835-7febc929f494",
+      "id": "6de0495d-4e2d-4a67-8b52-e0141b551822",
       "name": "Brave Search (Retrieval)1",
       "credentials": {
         "braveSearchApi": {
@@ -547,10 +547,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -2912,
-        496
+        -6368,
+        1024
       ],
-      "id": "953ce300-9e32-4044-b6e2-1adf8977ccbf",
+      "id": "53bf674e-e9f7-4cca-bb84-f47b0ee94142",
       "name": "Simple Memory (Retrieval)1"
     },
     {
@@ -561,10 +561,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -2592,
-        480
+        -6048,
+        1008
       ],
-      "id": "1519b70c-7252-4689-8b4a-fe79e9bb336c",
+      "id": "e5c1bf12-5934-4da2-8133-1ed8c03944d0",
       "name": "Structured Output Parser (Retrieval)1"
     },
     {
@@ -577,10 +577,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -2912,
-        240
+        -6368,
+        768
       ],
-      "id": "b3510ea2-5f2e-4b88-8edb-f877c4162b61",
+      "id": "3a5bf3ba-a46d-4481-b187-7c2390ea8652",
       "name": "AI Agent - Data Retrieval1"
     },
     {
@@ -600,10 +600,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2560,
-        272
+        -6016,
+        800
       ],
-      "id": "d4f3a1a9-f2f7-4b19-841d-7126aa8f4761",
+      "id": "3a1dcade-4c83-462d-8be7-dd7718c4ea9e",
       "name": "Compose Message - Price1"
     },
     {
@@ -614,10 +614,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -4096,
-        -432
+        -4752,
+        -160
       ],
-      "id": "a1dd26cd-e75d-452a-84ca-39031c570aaf",
+      "id": "cec830a5-10f0-4a98-8e4e-002a524a6f85",
       "name": "Structured Output Parser1"
     },
     {
@@ -628,10 +628,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -2752,
-        -48
+        -6208,
+        480
       ],
-      "id": "48229bfb-bbc5-4ec2-8cd7-8c8b71fbba4b",
+      "id": "7a66f03d-041c-440a-bb85-670e6f195f19",
       "name": "Structured Output Parser (Analyst)1"
     },
     {
@@ -650,10 +650,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -5248,
-        -336
+        -5856,
+        -848
       ],
-      "id": "7dc90622-6a3d-43be-8cfe-31e97ba016ef",
+      "id": "3152f70d-58eb-4c9a-8a80-ca5e032bb931",
       "name": "Fetch User Profile1",
       "alwaysOutputData": true,
       "credentials": {
@@ -711,10 +711,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -5024,
-        -496
+        -5616,
+        -592
       ],
-      "id": "eede5357-c39d-4aaa-88cc-e9ba96ac26b0",
+      "id": "ecb77d2d-8472-4f16-8e27-a292f26e3f7c",
       "name": "Merge User Context1"
     },
     {
@@ -726,10 +726,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -2000,
-        -528
+        -4880,
+        496
       ],
-      "id": "c0946681-6052-4e25-8e0b-26aa84c90031",
+      "id": "384cc96e-b11e-4ddd-8914-28051107a26a",
       "name": "Simple Memory (Direct Response)1"
     },
     {
@@ -761,10 +761,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3936,
-        -608
+        -4528,
+        -112
       ],
-      "id": "5db91c4d-730b-4159-804e-54663eea494d",
+      "id": "a5262376-27d1-4941-ac86-8ba752099712",
       "name": "Detect Budget Query1"
     },
     {
@@ -795,10 +795,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3632,
-        -688
+        -4256,
+        -224
       ],
-      "id": "b6d8703e-b258-4289-b3b7-b1e8320b65e5",
+      "id": "e8af6a46-3eb8-431c-89f9-29213c2d2b6d",
       "name": "If Budget Query?1"
     },
     {
@@ -818,10 +818,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3408,
-        -832
+        -3984,
+        -400
       ],
-      "id": "2c8feb63-b35a-4f09-bee5-5d60828135a3",
+      "id": "7b906234-8840-4edf-a351-659b51a0e83d",
       "name": "Compose Message - Budget1"
     },
     {
@@ -832,10 +832,10 @@
       "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
       "typeVersion": 1,
       "position": [
-        -1840,
-        -528
+        -4672,
+        496
       ],
-      "id": "22463800-3c1b-4ea9-9dd9-9c235a7ce172",
+      "id": "c4fa1c4e-cf32-4549-ac61-c5facf684e23",
       "name": "Brave Search (Direct Response)1",
       "credentials": {
         "braveSearchApi": {
@@ -853,10 +853,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -2096,
-        -768
+        -4976,
+        272
       ],
-      "id": "c47e69d4-2cfc-4f12-a7be-bf18670468e8",
+      "id": "9eb6aa0e-8052-421c-a5b4-6a768e1c3e23",
       "name": "AI Agent - Direct Response1"
     },
     {
@@ -876,10 +876,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1664,
-        -880
+        -4384,
+        288
       ],
-      "id": "0700abae-b8e7-423f-9165-05b5647e1d20",
+      "id": "6e55044c-eb06-4897-8d68-e7dcbb95eb25",
       "name": "Compose Message - Direct1"
     },
     {
@@ -891,10 +891,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1344,
-        -816
+        -4112,
+        96
       ],
-      "id": "c7abe69d-9fcf-4be2-b025-901d9941d555",
+      "id": "ae284f36-9b46-4830-9086-7fcce23cad9c",
       "name": "Reply in Telegram (Direct)1",
       "webhookId": "direct-response-webhook-id",
       "credentials": {
@@ -993,10 +993,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -896,
-        -800
+        -3664,
+        112
       ],
-      "id": "79692a30-7e52-4247-a3b5-4902089faad9",
+      "id": "1a1d1fda-7079-4221-90cd-da23b936b8c3",
       "name": "Extract Profile Updates1"
     },
     {
@@ -1027,10 +1027,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -672,
-        -752
+        -3440,
+        160
       ],
-      "id": "9101c2fd-cadf-4101-9a0b-85b290cac4a8",
+      "id": "23e7e604-40ae-4681-ad3a-4d40eca6eda7",
       "name": "Check if User Exists1"
     },
     {
@@ -1099,10 +1099,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -368,
-        -928
+        -3136,
+        -16
       ],
-      "id": "7891b2a1-3818-4614-99aa-20d965d222da",
+      "id": "8f323769-6d96-48fd-b4fc-e84665a1946a",
       "name": "Update User Profile1",
       "credentials": {
         "supabaseApi": {
@@ -1170,10 +1170,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -368,
-        -656
+        -3136,
+        272
       ],
-      "id": "1b41e834-b4e6-4358-890d-6099ff01b505",
+      "id": "473c4b70-fcaa-45f5-9b0d-bc83620d8ab5",
       "name": "Create User Profile1",
       "credentials": {
         "supabaseApi": {
@@ -1217,10 +1217,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3712,
-        -288
+        -6864,
+        96
       ],
-      "id": "21e71d96-4c6f-4329-8f09-d1b25a886fcf",
+      "id": "2b8f5dfc-36b9-459a-8faf-ffdd271a5f14",
       "name": "Sub Agentic Task1"
     },
     {
@@ -1231,10 +1231,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -4368,
-        -432
+        -5024,
+        -160
       ],
-      "id": "7e5d53e2-7770-49e5-9011-fbcfba6c0021",
+      "id": "b7c75151-e7fe-4558-93b6-364b185cb71c",
       "name": "Groq Chat Model4",
       "credentials": {
         "groqApi": {
@@ -1251,10 +1251,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -2976,
-        -48
+        -6432,
+        480
       ],
-      "id": "390082de-cce8-4f03-bb69-2409a1b2dff5",
+      "id": "a75c6b6e-709e-49fa-97fd-5c64cf3fc68f",
       "name": "Groq Chat Model5",
       "credentials": {
         "groqApi": {
@@ -1271,10 +1271,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -2160,
-        -528
+        -5072,
+        512
       ],
-      "id": "7d63c5cb-068d-4211-9381-008e78633cb6",
+      "id": "dc2923ce-4beb-4980-add2-39f4761056b0",
       "name": "Groq Chat Model6",
       "credentials": {
         "groqApi": {
@@ -1291,10 +1291,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -3072,
-        480
+        -6528,
+        1008
       ],
-      "id": "0b54797e-5681-41b0-a493-0ede13ac2675",
+      "id": "dbf62510-45fe-4aa0-837b-582ee9fe1d8a",
       "name": "Groq Chat Model7",
       "credentials": {
         "groqApi": {
@@ -1319,10 +1319,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -2272,
-        256
+        -5824,
+        912
       ],
-      "id": "89226fae-e994-431f-8e97-0d164e428c32",
+      "id": "2c431672-aee4-4cfd-ba59-202aab17872f",
       "name": "Fetch User Data for Email",
       "alwaysOutputData": true,
       "credentials": {
@@ -1356,10 +1356,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2064,
-        112
+        -5584,
+        1056
       ],
-      "id": "e0441f97-ebf9-4bc8-8b78-5e6f304b744b",
+      "id": "f70de80a-ac07-4a53-a5aa-cab7f63d4e7e",
       "name": "Format Email Content"
     },
     {
@@ -1372,10 +1372,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -1840,
-        0
+        -5408,
+        928
       ],
-      "id": "d141c8ce-bc78-428a-91cf-d7a5018175f6",
+      "id": "f1418ce7-f9b1-48c0-a459-36620c6ad5be",
       "name": "Send Data Email",
       "webhookId": "5edd6ac6-ef7f-46c8-b714-ec7ca38fd0d9",
       "credentials": {
@@ -1394,10 +1394,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1632,
-        -176
+        -5088,
+        752
       ],
-      "id": "2f9ecf05-dfc9-4fbb-b90a-54a0410ab884",
+      "id": "9a952bb1-d270-40f4-a65b-b262636fd0be",
       "name": "Confirm Email Sent",
       "webhookId": "confirm-email-webhook-001",
       "credentials": {
@@ -1416,10 +1416,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -6176,
-        -640
+        -6800,
+        -704
       ],
-      "id": "f5f07b38-9145-41b0-a2c2-e6dace7eeffa",
+      "id": "60e4bde6-5a7f-4351-a9ea-e3f2939ceeee",
       "name": "Transcribe audio1",
       "credentials": {
         "openAiApi": {
@@ -1456,10 +1456,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1088,
-        -992
+        -3856,
+        -80
       ],
-      "id": "c21315fa-fd83-4787-b32f-23c634ad4fea",
+      "id": "8def170d-9af6-493d-a5f0-4492eb5c9467",
       "name": "Check if Should Email Response"
     },
     {
@@ -1485,10 +1485,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -832,
-        -1152
+        -3600,
+        -240
       ],
-      "id": "e025a8b7-fd24-48cb-ba1a-41a8c78e6cd3",
+      "id": "1ed543b8-d13e-4c4b-85cf-145730ab8587",
       "name": "Capture Email Data"
     },
     {
@@ -1503,10 +1503,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -560,
-        -1056
+        -3328,
+        -144
       ],
-      "id": "f990ad46-98a4-4ee3-8757-7117b1dbdcad",
+      "id": "2719bcaa-90f9-4b02-a56b-739b6c0bbdf8",
       "name": "Send AI Response Email",
       "webhookId": "7a206559-3d19-4b5c-9e07-ef0adf3a40ac",
       "credentials": {
