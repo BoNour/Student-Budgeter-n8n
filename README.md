@@ -75,7 +75,8 @@ This is a high-level summary; for screenshots and more detail see `n8n mcp/My Wo
 
 ## Demo Video
 
-_Placeholder – add your demo video link or embed here (e.g., YouTube or Loom walkthrough)._
+https://youtu.be/03JXSOOjbeQ
+
 
 ## More Documentation & Troubleshooting
 
