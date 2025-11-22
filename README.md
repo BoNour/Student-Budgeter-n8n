@@ -1,5 +1,8 @@
 # Student Budgeter n8n Workflows
 
+Try bot for your self: https://t.me/unibudgetbot
+
+
 Student Budgeter is an AI-powered budgeting assistant built as an n8n workflow.  
 It connects a chat interface (Telegram) to Supabase so the bot can **remember each user’s financial profile** and give personalized budgeting advice over time.
 
